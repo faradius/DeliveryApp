@@ -10,6 +10,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.providers.UsersProvider
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -23,6 +29,8 @@ class RegisterActivity : AppCompatActivity() {
     var etPasswordRegister: EditText? = null
     var etConfirmPasswordRegister: EditText? = null
     var btnRegister:Button? = null
+
+    var usersProvider = UsersProvider()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,15 +63,31 @@ class RegisterActivity : AppCompatActivity() {
         val confirmPassword = etConfirmPasswordRegister?.text.toString()
 
         if (isValidForm(name, lastName,email,phone,password,confirmPassword)){
-            Toast.makeText(this, "El formulario es valido", Toast.LENGTH_SHORT).show()
-        }
+            val user = User(
+                name = name,
+                lastName = lastName,
+                email = email,
+                phone = phone,
+                password = password
+            )
+            usersProvider.register(user)?.enqueue(object: Callback<ResponseHttp>{
+                override fun onResponse(
+                    call: Call<ResponseHttp>,
+                    response: Response<ResponseHttp>
+                ) {
+                    Toast.makeText(this@RegisterActivity, response.body()?.message, Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "onResponse: $response")
+                    Log.d(TAG, "onBody: ${response.body()}")
+                }
 
-        Log.d(TAG, "El nombre es: $name")
-        Log.d(TAG, "El apellido es: $lastName")
-        Log.d(TAG, "El email es: $email")
-        Log.d(TAG, "El telefono es: $phone")
-        Log.d(TAG, "La contraseña es: $password")
-        Log.d(TAG, "La confirmación de la contraseña es: $confirmPassword")
+                override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                    Log.d(TAG, "onFailure: Se produjo un error ${t.message}")
+                    //se coloca el this de esta forma por que al estar en el enqueue estamos en otro contexto
+                    Toast.makeText(this@RegisterActivity, "onFailure: Se produjo un error ${t.message}", Toast.LENGTH_LONG).show()
+                }
+
+            })
+        }
     }
 
     private fun String.isEmailValid():Boolean{
