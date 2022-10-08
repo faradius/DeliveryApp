@@ -10,6 +10,11 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.providers.UsersProvider
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     var etEmailLogin:EditText? = null
     var etPasswordLogin:EditText? = null
     var btnLogin: Button? = null
+    var usersProvider = UsersProvider()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +48,28 @@ class MainActivity : AppCompatActivity() {
         val password = etPasswordLogin?.text.toString()
 
         if (isValidForm(email,password)){
-            Toast.makeText(this, "El formulario es valido", Toast.LENGTH_SHORT).show()
+            usersProvider.login(email, password)?.enqueue(object: Callback<ResponseHttp>{
+                override fun onResponse(
+                    call: Call<ResponseHttp>,
+                    response: Response<ResponseHttp>
+                ) {
+                    Log.d("MainActivity", "Response: ${response.body()}")
+
+                    if (response.body()?.isSuccess == true){
+                        Toast.makeText(this@MainActivity, response.body()?.message, Toast.LENGTH_LONG).show()
+                    }else{
+                        Toast.makeText(this@MainActivity, "Los datos no son correctos", Toast.LENGTH_LONG).show()
+                    }
+
+                }
+
+                override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                    Log.d("MainActivity", "Hubo un error ${t.message}")
+                    Toast.makeText(this@MainActivity, "Hubo un error ${t.message}", Toast.LENGTH_LONG).show()
+                }
+
+            })
+
         }else{
             Toast.makeText(this, "No es valido el formulario", Toast.LENGTH_SHORT).show()
         }
@@ -50,8 +77,6 @@ class MainActivity : AppCompatActivity() {
         //Toast.makeText(this, "El email es $email", Toast.LENGTH_SHORT).show()
         //Toast.makeText(this, "El pasword es $password", Toast.LENGTH_SHORT).show()
 
-        Log.d("MainActivity", "El email es: $email")
-        Log.d("MainActivity", "El password es: $password")
     }
 
     //Es un metodo que valida una variable que tiene un formato de email correcto, por eso el String al principio

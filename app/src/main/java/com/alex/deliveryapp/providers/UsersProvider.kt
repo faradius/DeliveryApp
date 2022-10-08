@@ -17,4 +17,8 @@ class UsersProvider {
     fun register(user:User): Call<ResponseHttp>?{
         return userRoutes?.register(user)
     }
+
+    fun login(email:String, password:String): Call<ResponseHttp>?{
+        return userRoutes?.login(email,password)
+    }
 }

@@ -4,6 +4,8 @@ import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface UsersRoutes {
@@ -12,4 +14,8 @@ interface UsersRoutes {
     @POST("users/create")
     //Se define la respuesta como ResponseHttp por que al insertar nos manda un modelo de datos diferente cuando se registra un usuario a la base de datos
     fun register(@Body user:User): Call<ResponseHttp>
+
+    @FormUrlEncoded
+    @POST("users/login")
+    fun login(@Field("email") email:String, @Field("password") password:String):Call<ResponseHttp>
 }
