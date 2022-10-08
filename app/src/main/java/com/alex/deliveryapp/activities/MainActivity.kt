@@ -10,14 +10,19 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
 import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.UsersProvider
+import com.alex.deliveryapp.utils.SharedPref
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = "MainActivity"
     var btnGoToRegister: ImageView? = null
     var etEmailLogin:EditText? = null
     var etPasswordLogin:EditText? = null
@@ -41,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         btnLogin?.setOnClickListener {
             login()
         }
+
+        getUserFromSession()
     }
     
     private fun login(){
@@ -57,6 +64,10 @@ class MainActivity : AppCompatActivity() {
 
                     if (response.body()?.isSuccess == true){
                         Toast.makeText(this@MainActivity, response.body()?.message, Toast.LENGTH_LONG).show()
+
+                        saveUserInSession(response.body()?.data.toString())
+                        goToClientHome()
+
                     }else{
                         Toast.makeText(this@MainActivity, "Los datos no son correctos", Toast.LENGTH_LONG).show()
                     }
@@ -77,6 +88,32 @@ class MainActivity : AppCompatActivity() {
         //Toast.makeText(this, "El email es $email", Toast.LENGTH_SHORT).show()
         //Toast.makeText(this, "El pasword es $password", Toast.LENGTH_SHORT).show()
 
+    }
+
+    private fun goToClientHome(){
+        val i = Intent(this, ClientHomeActivity::class.java)
+        startActivity(i)
+    }
+
+    private fun saveUserInSession(data: String){
+        val sharedPref = SharedPref(this)
+        val gson = Gson()
+        //En esta variable tenemos toda la información del usuario de tipo Json
+        val user = gson.fromJson(data,User::class.java)
+
+        sharedPref.save("user", user)
+
+    }
+
+    private fun getUserFromSession(){
+        val sharedPref = SharedPref(this)
+        val gson = Gson()
+
+        //Si el usuario existe en sesión
+        if (!sharedPref.getData("user").isNullOrBlank()){
+            val user = gson.fromJson(sharedPref.getData("user"), User::class.java)
+            goToClientHome()
+        }
     }
 
     //Es un metodo que valida una variable que tiene un formato de email correcto, por eso el String al principio
