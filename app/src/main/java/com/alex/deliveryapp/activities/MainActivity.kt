@@ -1,6 +1,8 @@
 package com.alex.deliveryapp.activities
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -11,9 +13,12 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
+import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
+import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity
 import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.UsersProvider
+import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
 import com.google.gson.Gson
 import retrofit2.Call
@@ -92,11 +97,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToClientHome(){
         val i = Intent(this, ClientHomeActivity::class.java)
+        //Esto es para eliminar el historial de pantallas
+        i.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(i)
+    }
+
+    private fun goToRestaurantHome(){
+        val i = Intent(this, RestaurantHomeActivity::class.java)
+        i.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(i)
+    }
+
+    private fun goToDeliveryHome(){
+        val i = Intent(this, DeliveryHomeActivity::class.java)
+        i.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         startActivity(i)
     }
 
     private fun goToSelectRol(){
         val i = Intent(this, SelectRolesActivity::class.java)
+        i.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         startActivity(i)
     }
 
@@ -119,13 +139,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUserFromSession(){
+
         val sharedPref = SharedPref(this)
         val gson = Gson()
 
         //Si el usuario existe en sesión
         if (!sharedPref.getData("user").isNullOrBlank()){
             val user = gson.fromJson(sharedPref.getData("user"), User::class.java)
-            goToClientHome()
+
+            if (!sharedPref.getData(Constants.ROL).isNullOrBlank()){
+                //Si el usuario selecciono el rol
+                val rol = sharedPref.getData(Constants.ROL)?.replace("\"","")
+                //Log.d(TAG, "ROL $rol")
+
+                if (rol == Constants.ROL_RESTAURANTE){
+                    goToRestaurantHome()
+                } else if(rol == Constants.ROL_CLIENTE){
+                    goToClientHome()
+                }else if(rol == Constants.ROL_REPARTIDOR){
+                    goToDeliveryHome()
+                }
+            }else{
+                goToClientHome()
+            }
         }
     }
 
