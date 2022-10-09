@@ -10,9 +10,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
 import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.UsersProvider
+import com.alex.deliveryapp.utils.SharedPref
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -75,6 +78,12 @@ class RegisterActivity : AppCompatActivity() {
                     call: Call<ResponseHttp>,
                     response: Response<ResponseHttp>
                 ) {
+
+                    if (response.body()?.isSuccess == true){
+                        saveUserInSession(response.body()?.data.toString())
+                        goToClientHome()
+                    }
+
                     Toast.makeText(this@RegisterActivity, response.body()?.message, Toast.LENGTH_LONG).show()
                     Log.d(TAG, "onResponse: $response")
                     Log.d(TAG, "onBody: ${response.body()}")
@@ -88,6 +97,21 @@ class RegisterActivity : AppCompatActivity() {
 
             })
         }
+    }
+
+    private fun goToClientHome(){
+        val i = Intent(this, ClientHomeActivity::class.java)
+        startActivity(i)
+    }
+
+    private fun saveUserInSession(data: String){
+        val sharedPref = SharedPref(this)
+        val gson = Gson()
+        //En esta variable tenemos toda la información del usuario de tipo Json
+        val user = gson.fromJson(data,User::class.java)
+
+        sharedPref.save("user", user)
+
     }
 
     private fun String.isEmailValid():Boolean{
