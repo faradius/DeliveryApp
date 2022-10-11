@@ -5,29 +5,66 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.fragment.app.Fragment
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.MainActivity
+import com.alex.deliveryapp.fragments.client.ClientCategoriesFragment
+import com.alex.deliveryapp.fragments.client.ClientOrdersFragment
+import com.alex.deliveryapp.fragments.client.ClientProfileFragment
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.utils.SharedPref
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 
 class ClientHomeActivity : AppCompatActivity() {
 
     private val TAG = "ClientHomeActivity"
-    var btnLogout: Button? = null
+    //var btnLogout: Button? = null
     var sharedPref: SharedPref? = null
+
+    var bottomNavigation: BottomNavigationView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_home)
-        btnLogout = findViewById(R.id.btn_logout)
+        //btnLogout = findViewById(R.id.btn_logout)
         sharedPref = SharedPref(this)
 
-        btnLogout?.setOnClickListener {
+        /*btnLogout?.setOnClickListener {
             logout()
+        }*/
+        openFragment(ClientCategoriesFragment())
+
+        bottomNavigation = findViewById(R.id.bottom_navigation_client)
+        bottomNavigation?.setOnItemSelectedListener {
+            when(it.itemId){
+                R.id.item_home -> {
+                    openFragment(ClientCategoriesFragment())
+                    true
+                }
+
+                R.id.item_orders -> {
+                    openFragment(ClientOrdersFragment())
+                    true
+                }
+
+                R.id.item_profile -> {
+                    openFragment(ClientProfileFragment())
+                    true
+                }
+
+                else -> false
+            }
         }
 
         getUserFromSession()
+    }
+
+    private fun openFragment(fragment: Fragment){
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.containerClient, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     private fun logout(){
