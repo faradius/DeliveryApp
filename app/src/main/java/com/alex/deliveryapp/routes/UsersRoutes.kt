@@ -2,11 +2,16 @@ package com.alex.deliveryapp.routes
 
 import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 
 interface UsersRoutes {
 
@@ -18,4 +23,11 @@ interface UsersRoutes {
     @FormUrlEncoded
     @POST("users/login")
     fun login(@Field("email") email:String, @Field("password") password:String):Call<ResponseHttp>
+
+    @Multipart //Esto se pone por que se esta subiendo una imagen
+    @PUT("users/update")
+    fun update(
+        @Part image: MultipartBody.Part,
+        @Part("user") user: RequestBody
+    ): Call<ResponseHttp>
 }

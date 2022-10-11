@@ -1,5 +1,6 @@
 package com.alex.deliveryapp.models
 
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
 class User(
@@ -27,5 +28,10 @@ class User(
 ){
     override fun toString(): String {
         return "User(id=$id, name='$name', lastName='$lastName', email='$email', phone='$phone', password='$password', image=$image, sessionToken=$sessionToken, isAvailable=$isAvailable, roles=$roles)"
+    }
+
+    //Transformamos este tipo de modelo a un tipo JSON
+    fun toJson(): String{
+        return Gson().toJson(this)
     }
 }
