@@ -26,6 +26,10 @@ class UsersProvider {
         return userRoutes?.login(email,password)
     }
 
+    fun updateWithoutImage(user:User): Call<ResponseHttp>?{
+        return userRoutes?.updateWithoutImage(user)
+    }
+
     fun update(file: File, user: User): Call<ResponseHttp>?{
         val reqFile = RequestBody.create(MediaType.parse("image/*"), file) //Este es el archivo que vamos a enviar
         val image = MultipartBody.Part.createFormData("image", file.name, reqFile) // Este es el nombre del archivo

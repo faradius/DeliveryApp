@@ -8,13 +8,13 @@ class User(
     @SerializedName("id")
     val id: String? = null,
     @SerializedName("name")
-    val name: String,
+    var name: String,
     @SerializedName("lastname")
-    val lastName: String,
+    var lastName: String,
     @SerializedName("email")
     val email: String,
     @SerializedName("phone")
-    val phone: String,
+    var phone: String,
     @SerializedName("password")
     val password: String,
     @SerializedName("image")

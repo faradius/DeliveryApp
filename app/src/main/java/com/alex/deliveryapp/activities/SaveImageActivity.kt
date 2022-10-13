@@ -78,8 +78,6 @@ class SaveImageActivity : AppCompatActivity() {
         }else{
             Toast.makeText(this, "La imagen no puede ser nula ni tampoco los datos de session del usuario", Toast.LENGTH_LONG).show()
         }
-
-
     }
 
     private fun saveUserInSession(data: String){

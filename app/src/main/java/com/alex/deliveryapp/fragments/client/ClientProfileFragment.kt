@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.MainActivity
 import com.alex.deliveryapp.activities.SelectRolesActivity
+import com.alex.deliveryapp.activities.client.update.ClientUpdateActivity
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.utils.SharedPref
 import com.bumptech.glide.Glide
@@ -53,6 +54,7 @@ class ClientProfileFragment : Fragment() {
 
         btnSelectRol?.setOnClickListener { goToSelectRol() }
         ivLogout?.setOnClickListener { logout() }
+        btnUpdateProfile?.setOnClickListener { goToUpdate() }
 
         getUserFromSession()
 
@@ -71,6 +73,11 @@ class ClientProfileFragment : Fragment() {
     private fun goToSelectRol(){
         val i = Intent(requireContext(), SelectRolesActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(i)
+    }
+
+    private fun goToUpdate(){
+        val i = Intent(requireContext(), ClientUpdateActivity::class.java)
         startActivity(i)
     }
 
