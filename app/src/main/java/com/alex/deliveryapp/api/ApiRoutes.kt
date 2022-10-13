@@ -11,4 +11,8 @@ class ApiRoutes {
     fun getUsersRoutes(): UsersRoutes{
         return retrofit.getClient(BASE_URL).create(UsersRoutes::class.java)
     }
+
+    fun getUsersRoutesWithToken(token:String): UsersRoutes{
+        return retrofit.getClientWithToken(BASE_URL, token).create(UsersRoutes::class.java)
+    }
 }

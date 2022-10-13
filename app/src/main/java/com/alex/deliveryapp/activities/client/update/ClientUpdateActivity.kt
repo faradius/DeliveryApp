@@ -38,7 +38,7 @@ class ClientUpdateActivity : AppCompatActivity() {
     var user: User? = null
 
     private var imageFile: File? = null
-    private var usersProvider = UsersProvider()
+    private var usersProvider:UsersProvider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +53,8 @@ class ClientUpdateActivity : AppCompatActivity() {
         btnUserUpdate = findViewById(R.id.btn_user_update)
 
         getUserFromSession()
+
+        usersProvider = UsersProvider(user?.sessionToken)
 
         etNameUserUpdate?.setText(user?.name)
         etLastNameUserUpdate?.setText(user?.lastName)
@@ -85,12 +87,14 @@ class ClientUpdateActivity : AppCompatActivity() {
         user?.phone = phone
 
         if (imageFile != null){
-            usersProvider.update(imageFile!!, user!!)?.enqueue(object : Callback<ResponseHttp> {
+            usersProvider?.update(imageFile!!, user!!)?.enqueue(object : Callback<ResponseHttp> {
                 override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
                     Log.d(TAG, "RESPONSE: $response")
                     Log.d(TAG, "BODY: ${response.body()}")
 
-                    saveUserInSession(response.body()?.data.toString())
+                    if (response.body()?.isSuccess == true){
+                        saveUserInSession(response.body()?.data.toString())
+                    }
                     Toast.makeText(this@ClientUpdateActivity, "Datos guardados correctamente", Toast.LENGTH_LONG).show()
 
                 }
@@ -102,12 +106,15 @@ class ClientUpdateActivity : AppCompatActivity() {
 
             })
         }else{
-            usersProvider.updateWithoutImage(user!!)?.enqueue(object : Callback<ResponseHttp> {
+            usersProvider?.updateWithoutImage(user!!)?.enqueue(object : Callback<ResponseHttp> {
                 override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
                     Log.d(TAG, "RESPONSE: $response")
                     Log.d(TAG, "BODY: ${response.body()}")
 
-                    saveUserInSession(response.body()?.data.toString())
+                    if (response.body()?.isSuccess == true){
+                        saveUserInSession(response.body()?.data.toString())
+                    }
+
                     Toast.makeText(this@ClientUpdateActivity, "Datos guardados correctamente", Toast.LENGTH_LONG).show()
 
                 }
