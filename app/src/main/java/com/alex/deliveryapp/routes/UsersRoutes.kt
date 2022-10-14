@@ -26,7 +26,7 @@ interface UsersRoutes {
     fun login(@Field("email") email:String, @Field("password") password:String):Call<ResponseHttp>
 
     @Multipart //Esto se pone por que se esta subiendo una imagen
-    @PUT("users/update")
+    @PUT("users/update") //Se utiliza put por que es una actualización de datos
     fun update(
         @Part image: MultipartBody.Part,
         @Part("user") user: RequestBody,
