@@ -10,6 +10,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
@@ -40,11 +42,19 @@ class ClientUpdateActivity : AppCompatActivity() {
     private var imageFile: File? = null
     private var usersProvider:UsersProvider? = null
 
+    var toolbar: Toolbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_update)
 
         sharedPref = SharedPref(this)
+
+        toolbar = findViewById(R.id.toolbar)
+        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
+        toolbar?.title = "Editar Perfil"
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         circleImageUserUpdate = findViewById(R.id.iv_circle_user_profile_update)
         etNameUserUpdate = findViewById(R.id.et_name_user_update)

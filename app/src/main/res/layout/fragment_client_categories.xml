@@ -5,10 +5,15 @@
     android:layout_height="match_parent"
     tools:context=".fragments.client.ClientCategoriesFragment">
 
+    <include layout="@layout/action_bar"/>
 
-    <TextView
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_categories"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="FRAGMENT_CLIENT" />
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="55dp"
+        />
 
 </FrameLayout>
