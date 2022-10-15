@@ -30,9 +30,9 @@ class ClientCategoriesFragment : Fragment() {
 
     var myView: View? = null
     var rvCategories: RecyclerView? = null
-    var categoriesProvider: CategoriesProvider? = null
     var adapter: CategoriesAdapter? = null
     var user: User? = null
+    var categoriesProvider: CategoriesProvider? = null
     var sharedPref: SharedPref? = null
     var categories = ArrayList<Category>()
     var toolbar: Toolbar? = null
