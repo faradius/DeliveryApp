@@ -59,6 +59,7 @@ class CategoriesAdapter(val context: Activity, val categories: ArrayList<Categor
    private fun goToProducts(category: Category){
         val i = Intent(context, ClientProductsListActivity::class.java)
         i.putExtra(Constants.ID_CATEGORY, category.id)
+        i.putExtra(Constants.NAME_CATEGORY, category.name)
         context.startActivity(i)
     }
 

@@ -7,4 +7,5 @@ object Constants {
     const val ROL_CLIENTE = "CLIENTE"
     const val ROL_REPARTIDOR = "REPARTIDOR"
     const val ID_CATEGORY = "idCategory"
+    const val NAME_CATEGORY = "nameCategory"
 }

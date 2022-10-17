@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
@@ -29,15 +31,25 @@ class ClientProductsListActivity : AppCompatActivity() {
     var products:ArrayList<Product> = ArrayList()
 
     var idCategory:String? = null
+    var nameCategory:String? = null
     var sharedPref: SharedPref? = null
+
+    var toolbar: Toolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_products_list)
+        toolbar = findViewById(R.id.toolbar)
+        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
 
         sharedPref = SharedPref(this)
 
         idCategory = intent.getStringExtra(Constants.ID_CATEGORY)
+        nameCategory = intent.getStringExtra(Constants.NAME_CATEGORY)
+
+        toolbar?.title = nameCategory
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         getUserFromSession()
 
