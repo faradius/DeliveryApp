@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
+import com.alex.deliveryapp.activities.client.products.list.ClientProductsListActivity
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity
 import com.alex.deliveryapp.models.Category
@@ -35,7 +36,7 @@ class CategoriesAdapter(val context: Activity, val categories: ArrayList<Categor
         holder.tvNameCategory.text = category.name
         Glide.with(context).load(category.image).into(holder.ivCategory)
 
-        //holder.itemView.setOnClickListener{ goToRol(rol) }
+        holder.itemView.setOnClickListener{ goToProducts(category) }
     }
 
     //Metodo que define el tamaño de elementos que tiene la vista
@@ -55,10 +56,11 @@ class CategoriesAdapter(val context: Activity, val categories: ArrayList<Categor
 
     }
 
-   /* private fun goToRol(rol: Rol){
-        val i = Intent(context, RestaurantHomeActivity::class.java)
+   private fun goToProducts(category: Category){
+        val i = Intent(context, ClientProductsListActivity::class.java)
+        i.putExtra(Constants.ID_CATEGORY, category.id)
         context.startActivity(i)
-    }*/
+    }
 
 
 }

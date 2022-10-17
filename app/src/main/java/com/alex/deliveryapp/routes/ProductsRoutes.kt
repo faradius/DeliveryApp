@@ -16,11 +16,16 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ProductsRoutes {
 
-    //@GET("categories/getAll")
-    //fun getAll(@Header("Authorization") token: String): Call<ArrayList<Category>> //Esto es lo que estamos esperando en recibir en este call
+    @GET("products/findByCategory/{id_category}")
+    fun findByCategory(
+        //El path hace referencia a /{id_category}
+        @Path("id_category") idCategory: String,
+        @Header("Authorization") token: String
+    ): Call<ArrayList<Product>> //Esto es lo que estamos esperando en recibir en este call
 
     @Multipart
     @POST("products/create")

@@ -12,11 +12,13 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.adapters.CategoriesAdapter
 import com.alex.deliveryapp.models.Category
@@ -47,6 +49,7 @@ class RestaurantProductFragment : Fragment() {
     var ivImageProduct3: ImageView? = null
     var btnCreateProduct: Button? = null
     var spinnerCategories: Spinner? = null
+    var progress: FrameLayout? = null
 
     var imageFile1: File? = null
     var imageFile2: File? = null
@@ -74,6 +77,7 @@ class RestaurantProductFragment : Fragment() {
         ivImageProduct3 = myView?.findViewById(R.id.iv_image3)
         btnCreateProduct = myView?.findViewById(R.id.btn_create_product)
         spinnerCategories = myView?.findViewById(R.id.spinner_categories)
+        progress =  myView?.findViewById(R.id.progress)
 
         btnCreateProduct?.setOnClickListener { createProduct() }
         ivImageProduct1?.setOnClickListener { selectImage(101) }
@@ -145,17 +149,25 @@ class RestaurantProductFragment : Fragment() {
             files.add(imageFile2!!)
             files.add(imageFile3!!)
 
+            progress?.visibility = View.VISIBLE
+
             productsProvider?.create(files, product)?.enqueue(object: Callback<ResponseHttp>{
                 override fun onResponse(
                     call: Call<ResponseHttp>,
                     response: Response<ResponseHttp>
                 ) {
+                    progress?.visibility = View.INVISIBLE
                     Log.d(TAG, "Response: $response")
                     Log.d(TAG, "Body: ${response.body()}")
                     Toast.makeText(requireContext(), response.body()?.message, Toast.LENGTH_SHORT).show()
+
+                    if (response.body()?.isSuccess == true){
+                        resetForm()
+                    }
                 }
 
                 override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                    progress?.visibility = View.INVISIBLE
                     Log.d(TAG, "Error: ${t.message}")
                     Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_LONG).show()
                 }
@@ -163,6 +175,19 @@ class RestaurantProductFragment : Fragment() {
             })
         }
     }
+
+    private fun resetForm(){
+        etNameProduct?.setText("")
+        etDescriptionProduct?.setText("")
+        etPriceProduct?.setText("")
+        imageFile1 = null
+        imageFile2 = null
+        imageFile3 = null
+        ivImageProduct1?.setImageResource(R.drawable.ic_image)
+        ivImageProduct2?.setImageResource(R.drawable.ic_image)
+        ivImageProduct3?.setImageResource(R.drawable.ic_image)
+    }
+
 
     private fun isValidForm(name:String, description: String, price:String):Boolean{
 
