@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Descripción"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@color/black"
             android:layout_marginHorizontal="25dp"
             android:layout_marginTop="35dp"/>
@@ -47,49 +47,53 @@
             android:maxLength="255"
             android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,"
             android:textAllCaps="false"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
         
-        <LinearLayout
-            android:layout_width="match_parent"
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="90dp">
+
+        <ImageView
+            android:id="@+id/iv_remove_product_detail"
+
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_remove_circle_outline"/>
+
+        <TextView
+            android:id="@+id/tv_amount_product_detail"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp">
-            
-            <ImageView
-                android:id="@+id/iv_add_product_detail"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_add_circle_outline_outline"/>
+            android:text="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="5dp"/>
 
-            <TextView
-                android:id="@+id/tv_amount_product_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginHorizontal="5dp"/>
+        <ImageView
+            android:id="@+id/iv_add_product_detail"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_add_circle_outline"/>
 
-            <ImageView
-                android:id="@+id/iv_remove_product_detail"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_remove_circle"/>
-
-            <TextView
-                android:id="@+id/tv_price_product_detail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textAlignment="textEnd"
-                android:text="$1"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginHorizontal="5dp"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_price_product_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="textEnd"
+            android:text="$1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="5dp"/>
 
     </LinearLayout>
 

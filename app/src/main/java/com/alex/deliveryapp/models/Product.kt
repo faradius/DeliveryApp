@@ -12,7 +12,7 @@ class Product(
     val image2: String? = null,
     val image3: String? = null,
     @SerializedName("id_category") val idCategory: String,
-    val quantity: Int? = null
+    var quantity: Int? = null
 ) {
     fun toJson():String{
         return Gson().toJson(this)

@@ -19,6 +19,7 @@ import com.alex.deliveryapp.models.Rol
 import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 
 class ProductsAdapter(val context: Activity, val products: ArrayList<Product>):RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
@@ -41,6 +42,7 @@ class ProductsAdapter(val context: Activity, val products: ArrayList<Product>):R
 
     private fun goToProductDetail(product: Product) {
         val i = Intent(context, ClientProductsDetailActivity::class.java)
+        i.putExtra(Constants.PRODUCT, product.toJson())
         context.startActivity(i)
     }
 
