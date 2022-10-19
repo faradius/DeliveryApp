@@ -3,6 +3,8 @@ package com.alex.deliveryapp.activities.client.products.list
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -26,6 +28,7 @@ class ClientProductsListActivity : AppCompatActivity() {
 
     var rvProducts: RecyclerView? = null
     var adapter:ProductsAdapter? = null
+    var messageEmptyList:FrameLayout? = null
     var user: User? = null
     var productsProvider: ProductsProvider? = null
     var products:ArrayList<Product> = ArrayList()
@@ -41,6 +44,8 @@ class ClientProductsListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_client_products_list)
         toolbar = findViewById(R.id.toolbar)
         toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
+
+        messageEmptyList = findViewById(R.id.message_product_EmptyList)
 
         sharedPref = SharedPref(this)
 
@@ -76,10 +81,18 @@ class ClientProductsListActivity : AppCompatActivity() {
                 call: Call<ArrayList<Product>>,
                 response: Response<ArrayList<Product>>
             ) {
-                if (response.body() != null){
+                if (response.body() != null){ //Si la petición a los datos no es nulo
                     products = response.body()!!
-                    adapter = ProductsAdapter(this@ClientProductsListActivity, products)
-                    rvProducts?.adapter = adapter
+                    if(products.size != 0){ //Si la lista traida no es esta vacia entonces muestra el recyclerView
+                        messageEmptyList?.visibility = View.GONE
+                        rvProducts?.visibility = View.VISIBLE
+                        adapter = ProductsAdapter(this@ClientProductsListActivity, products)
+                        rvProducts?.adapter = adapter
+                    }else{
+                        messageEmptyList?.visibility = View.VISIBLE
+                        rvProducts?.visibility = View.GONE
+                    }
+
                 }
             }
 

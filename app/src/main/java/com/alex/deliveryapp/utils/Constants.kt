@@ -9,4 +9,5 @@ object Constants {
     const val ID_CATEGORY = "idCategory"
     const val NAME_CATEGORY = "nameCategory"
     const val PRODUCT = "product"
+    const val ORDER = "order"
 }
