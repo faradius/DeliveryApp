@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
+import com.alex.deliveryapp.activities.client.products.detail.ClientProductsDetailActivity
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity
 import com.alex.deliveryapp.models.Category
@@ -34,6 +35,13 @@ class ProductsAdapter(val context: Activity, val products: ArrayList<Product>):R
         holder.tvNameProduct.text = product.name
         holder.tvPriceProduct.text = "$${product.price}"
         Glide.with(context).load(product.image1).into(holder.ivProduct)
+
+        holder.itemView.setOnClickListener { goToProductDetail(product) }
+    }
+
+    private fun goToProductDetail(product: Product) {
+        val i = Intent(context, ClientProductsDetailActivity::class.java)
+        context.startActivity(i)
     }
 
     //Metodo que define el tamaño de elementos que tiene la vista
