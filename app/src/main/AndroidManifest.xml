@@ -23,7 +23,8 @@
         tools:targetApi="31">
         <activity
             android:name=".activities.client.shopping_car.ClientShoppingCarActivity"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".activities.client.home.ClientHomeActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
