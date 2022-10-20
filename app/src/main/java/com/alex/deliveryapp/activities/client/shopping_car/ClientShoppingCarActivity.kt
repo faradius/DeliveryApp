@@ -52,6 +52,10 @@ class ClientShoppingCarActivity : AppCompatActivity() {
         getProductsFromSharedPref()
     }
 
+    fun setTotal(total:Double){
+        tvTotal?.text = "$${total}"
+    }
+
     private fun getProductsFromSharedPref(){
         //Si existe una orden en sharedPreferences
         if (!sharedPref?.getData(Constants.ORDER).isNullOrBlank()){

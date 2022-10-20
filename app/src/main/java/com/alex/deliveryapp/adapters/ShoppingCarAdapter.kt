@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
 import com.alex.deliveryapp.activities.client.products.detail.ClientProductsDetailActivity
+import com.alex.deliveryapp.activities.client.shopping_car.ClientShoppingCarActivity
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity
 import com.alex.deliveryapp.models.Category
@@ -22,6 +23,12 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 
 class ShoppingCarAdapter(val context: Activity, val products: ArrayList<Product>):RecyclerView.Adapter<ShoppingCarAdapter.ShoppingCarViewHolder>() {
+
+    val sharedPref = SharedPref(context)
+
+    init {
+        (context as ClientShoppingCarActivity).setTotal(getTotal())
+    }
 
     //Metodo para inflar la vista
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingCarViewHolder {
@@ -38,14 +45,79 @@ class ShoppingCarAdapter(val context: Activity, val products: ArrayList<Product>
         holder.tvPriceProduct.text = "$${product.price * product.quantity!!}"
         Glide.with(context).load(product.image1).into(holder.ivProduct)
 
+        holder.ivAdd.setOnClickListener { addItem(product, holder) }
+        holder.ivRemove.setOnClickListener { removeItem(product, holder) }
+        holder.ivDelete.setOnClickListener { deleteItem(position) }
+
         //holder.itemView.setOnClickListener { goToProductDetail(product) }
     }
 
-    private fun goToProductDetail(product: Product) {
-        val i = Intent(context, ClientProductsDetailActivity::class.java)
-        i.putExtra(Constants.PRODUCT, product.toJson())
-        context.startActivity(i)
+    private fun getTotal():Double{
+        var total = 0.0
+        for (p in products){
+            total += p.quantity!! * p.price
+        }
+
+        return total
     }
+
+    private fun getIndexOf(idProduct:String):Int{
+        var position = 0
+
+        for (p in products){
+            if (p.id == idProduct){
+                return position
+            }
+
+            position++
+        }
+        return -1
+    }
+
+    private fun deleteItem(position: Int){
+        products.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeRemoved(position, products.size)
+
+        sharedPref.save(Constants.ORDER, products)
+        (context as ClientShoppingCarActivity).setTotal(getTotal())
+    }
+
+    private fun addItem(product: Product, holder: ShoppingCarViewHolder){
+
+        val index = getIndexOf(product.id!!)
+        product.quantity = product.quantity!! + 1
+        products[index].quantity = product.quantity
+
+        holder.tvCounterProduct.text = "${product.quantity}"
+        holder.tvPriceProduct.text = "$${product.quantity!! * product.price}"
+
+        sharedPref.save(Constants.ORDER, products)
+        (context as ClientShoppingCarActivity).setTotal(getTotal())
+    }
+
+    private fun removeItem(product: Product, holder: ShoppingCarViewHolder){
+        if (product.quantity!! > 1){
+            val index = getIndexOf(product.id!!)
+            product.quantity = product.quantity!! - 1
+            products[index].quantity = product.quantity
+
+            holder.tvCounterProduct.text = "${product.quantity}"
+            holder.tvPriceProduct.text = "$${product.quantity!! * product.price}"
+
+            sharedPref.save(Constants.ORDER, products)
+            (context as ClientShoppingCarActivity).setTotal(getTotal())
+        }
+
+
+
+    }
+
+//    private fun goToProductDetail(product: Product) {
+//        val i = Intent(context, ClientProductsDetailActivity::class.java)
+//        i.putExtra(Constants.PRODUCT, product.toJson())
+//        context.startActivity(i)
+//    }
 
     //Metodo que define el tamaño de elementos que tiene la vista
     override fun getItemCount(): Int {
