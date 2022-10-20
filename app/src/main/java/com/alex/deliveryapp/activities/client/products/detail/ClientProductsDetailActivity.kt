@@ -81,7 +81,7 @@ class ClientProductsDetailActivity : AppCompatActivity() {
         val index = getIndexOf(product?.id!!) //El indice del producto si es que existe en sharedpref
 
         if (index == -1){ //Este producto no existe aun en shared pref
-            if (product?.quantity == 0){
+            if (product?.quantity == null){ //corregi este error estaba como cero
                 //La cantidad seleccionada de ese producto como minimo es uno
                 product?.quantity = 1
             }
@@ -110,6 +110,7 @@ class ClientProductsDetailActivity : AppCompatActivity() {
             if(index != -1){
                 product?.quantity = selectedProducts[index].quantity
 
+                //Buscar la manera de arreglar esto ya que no funciona bien el incremento de productos con estas dos lineas
                 counter = product?.quantity!!
                 tvCounterProduct?.text = "$counter"
 

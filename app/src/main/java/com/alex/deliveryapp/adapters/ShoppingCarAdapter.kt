@@ -34,7 +34,8 @@ class ShoppingCarAdapter(val context: Activity, val products: ArrayList<Product>
         val product = products[position] //Obtenemos cada una de las categorias
 
         holder.tvNameProduct.text = product.name
-        holder.tvPriceProduct.text = "$${product.price}"
+        holder.tvCounterProduct.text = "${product.quantity}"
+        holder.tvPriceProduct.text = "$${product.price * product.quantity!!}"
         Glide.with(context).load(product.image1).into(holder.ivProduct)
 
         //holder.itemView.setOnClickListener { goToProductDetail(product) }
