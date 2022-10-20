@@ -43,7 +43,7 @@ class ClientProductsListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_products_list)
         toolbar = findViewById(R.id.toolbar)
-        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
+        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
 
         messageEmptyList = findViewById(R.id.message_product_EmptyList)
 

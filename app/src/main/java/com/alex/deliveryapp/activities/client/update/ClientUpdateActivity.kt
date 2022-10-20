@@ -51,7 +51,7 @@ class ClientUpdateActivity : AppCompatActivity() {
         sharedPref = SharedPref(this)
 
         toolbar = findViewById(R.id.toolbar)
-        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.white))
+        toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
         toolbar?.title = "Editar Perfil"
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

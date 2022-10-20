@@ -46,7 +46,7 @@ class ClientCategoriesFragment : Fragment() {
 
         setHasOptionsMenu(true)
         toolbar = myView?.findViewById(R.id.toolbar)
-        toolbar?.setTitleTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        toolbar?.setTitleTextColor(ContextCompat.getColor(requireContext(), R.color.black))
         toolbar?.title = "Categorías"
         //Ponemos esta linea para que el fragment soporte esta toolbar
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
