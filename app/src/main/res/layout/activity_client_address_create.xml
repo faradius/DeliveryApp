@@ -56,7 +56,10 @@
             android:hint="Punto de referencia"
             android:inputType="text"
             android:padding="15dp"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:focusable="false"
+            android:clickable="true"
+            android:cursorVisible="false"/>
 
     </LinearLayout>
 
