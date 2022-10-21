@@ -1,5 +1,6 @@
 package com.alex.deliveryapp.activities.client.shopping_car
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.address.create.ClientAddressCreateActivity
+import com.alex.deliveryapp.activities.client.address.list.ClientAddressListActivity
 import com.alex.deliveryapp.adapters.ShoppingCarAdapter
 import com.alex.deliveryapp.models.Product
 import com.alex.deliveryapp.utils.Constants
@@ -50,6 +53,13 @@ class ClientShoppingCarActivity : AppCompatActivity() {
         rvShoppingCar?.layoutManager = LinearLayoutManager(this)
 
         getProductsFromSharedPref()
+
+        btnNext?.setOnClickListener { goToAddressList() }
+    }
+
+    private fun goToAddressList() {
+        val i = Intent(this, ClientAddressListActivity::class.java)
+        startActivity(i)
     }
 
     fun setTotal(total:Double){
