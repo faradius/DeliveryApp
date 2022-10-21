@@ -4,15 +4,19 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.utils.Constants
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,11 +26,20 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 
 class ClientAddressMapActivity : AppCompatActivity(), OnMapReadyCallback {
+    var TAG = "ClientAddressMap"
 
     var googleMap: GoogleMap? = null
 
     val PERMISSION_ID = 42
     var fusedLocationClient: FusedLocationProviderClient? = null
+
+    var tvAddressLocationMap: TextView? = null
+    var btnAcceptLocationMap: Button? = null
+
+    var city = ""
+    var country = ""
+    var address = ""
+    var addressLatLng: LatLng? = null
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
@@ -46,12 +59,48 @@ class ClientAddressMapActivity : AppCompatActivity(), OnMapReadyCallback {
         //Esta variable nos va ayudar a iniciar el servicio para encontrar nuestra localización
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        tvAddressLocationMap = findViewById(R.id.tv_address_map_location)
+        btnAcceptLocationMap = findViewById(R.id.btn_accept_location)
+
         getLastLocation()
+
+        btnAcceptLocationMap?.setOnClickListener { goToCreateAddress() }
 
     }
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
+        onCameraMove()
+    }
+
+    private fun goToCreateAddress(){
+        val i = Intent()
+        i.putExtra(Constants.CITY, city)
+        i.putExtra(Constants.ADDRESS, address)
+        i.putExtra(Constants.COUNTRY, country)
+        i.putExtra(Constants.LAT, addressLatLng?.latitude)
+        i.putExtra(Constants.LNG, addressLatLng?.longitude)
+        setResult(RESULT_OK, i)
+        finish() //Destruye la activtiy y vuelve hacia atras
+    }
+
+    private fun onCameraMove(){
+        googleMap?.setOnCameraIdleListener {
+            try {
+                val geocoder = Geocoder(this)
+                addressLatLng = googleMap?.cameraPosition?.target
+                //Con esto obtenemos la localizacion que estamos ubicados actualmente
+                val addressList = geocoder.getFromLocation(addressLatLng?.latitude!!, addressLatLng?.longitude!!, 1)
+                city = addressList[0].locality
+                country = addressList[0].countryName
+                address = addressList[0].getAddressLine(0)
+
+                tvAddressLocationMap?.text = "$address $city"
+
+            }catch (e: Exception){
+                Log.d(TAG, "Error onCameraMove: ${e.message}")
+            }
+        }
     }
 
     private fun getLastLocation(){
