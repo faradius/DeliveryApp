@@ -1,5 +1,6 @@
 package com.alex.deliveryapp.api
 
+import com.alex.deliveryapp.routes.AddressRoutes
 import com.alex.deliveryapp.routes.CategoriesRoutes
 import com.alex.deliveryapp.routes.ProductsRoutes
 import com.alex.deliveryapp.routes.UsersRoutes
@@ -24,5 +25,9 @@ class ApiRoutes {
 
     fun getProductsRoutes(token:String): ProductsRoutes {
         return retrofit.getClientWithToken(BASE_URL, token).create(ProductsRoutes::class.java)
+    }
+
+    fun getAddressRoutes(token:String): AddressRoutes{
+        return retrofit.getClientWithToken(BASE_URL, token).create(AddressRoutes::class.java)
     }
 }

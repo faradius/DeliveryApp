@@ -12,8 +12,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.address.list.ClientAddressListActivity
 import com.alex.deliveryapp.activities.client.address.map.ClientAddressMapActivity
+import com.alex.deliveryapp.models.Address
+import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.providers.AddressProvider
 import com.alex.deliveryapp.utils.Constants
+import com.alex.deliveryapp.utils.SharedPref
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ClientAddressCreateActivity : AppCompatActivity() {
     val TAG = "ClientAddressCreate"
@@ -27,9 +37,17 @@ class ClientAddressCreateActivity : AppCompatActivity() {
     var addressLat = 0.0
     var addressLng = 0.0
 
+    var addressProvider: AddressProvider? = null
+    var sharedPref:SharedPref? = null
+    var user:User? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_address_create)
+
+        sharedPref = SharedPref(this)
+        getUserFromSession()
+        addressProvider = AddressProvider(user?.sessionToken!!)
 
         toolbar = findViewById(R.id.toolbar)
         toolbar?.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
@@ -44,7 +62,7 @@ class ClientAddressCreateActivity : AppCompatActivity() {
 
         etRefPoint?.setOnClickListener { goToAddressMap() }
 
-        btnCreateAddress?.setOnClickListener {  }
+        btnCreateAddress?.setOnClickListener { createAddress() }
     }
 
     private fun createAddress(){
@@ -53,7 +71,40 @@ class ClientAddressCreateActivity : AppCompatActivity() {
 
         if (isValidForm(address, neighborhood)){
             //Lanzar petición a nodejs
+
+            val addressModel = Address(
+                address = address,
+                neighborhood = neighborhood,
+                idUser = user?.id!!,
+                lat = addressLat,
+                lng = addressLng
+            )
+
+            addressProvider?.create(addressModel)?.enqueue(object:  Callback<ResponseHttp>{
+                override fun onResponse(
+                    call: Call<ResponseHttp>,
+                    response: Response<ResponseHttp>
+                ) {
+                    if (response.body() != null){
+                        Toast.makeText(this@ClientAddressCreateActivity, response.body()?.message, Toast.LENGTH_LONG).show()
+                        goToAddressList()
+                    }else{
+                        Toast.makeText(this@ClientAddressCreateActivity, "Ocurrio un error en la petición", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                    Toast.makeText(this@ClientAddressCreateActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "onFailure: ${t.message}")
+                }
+
+            })
         }
+    }
+
+    private fun goToAddressList(){
+        val i = Intent(this,ClientAddressListActivity::class.java)
+        startActivity(i)
     }
 
     private fun isValidForm(address: String, neighborhood: String ):Boolean{
@@ -105,5 +156,14 @@ class ClientAddressCreateActivity : AppCompatActivity() {
         val i = Intent(this, ClientAddressMapActivity::class.java)
         //Aqui ejecutamos la variable y se queda en escucha esta activity de un resultado que le enviará el activity hijo
         resultLauncher.launch(i)
+    }
+
+    private fun getUserFromSession(){
+        val gson = Gson()
+
+        //Si el usuario existe en sesión
+        if (!sharedPref?.getData("user").isNullOrBlank()){
+            user = gson.fromJson(sharedPref?.getData("user"), User::class.java)
+        }
     }
 }
