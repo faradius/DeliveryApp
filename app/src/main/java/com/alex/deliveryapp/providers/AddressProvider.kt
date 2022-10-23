@@ -22,9 +22,9 @@ class AddressProvider(val token: String) {
         addressRoutes = api.getAddressRoutes(token)
     }
 
-//    fun getAll():Call<ArrayList<Category>>?{
-//        return categoriesRoutes?.getAll(token)
-//    }
+    fun getAddress(idUser: String):Call<ArrayList<Address>>?{
+        return addressRoutes?.getAddress(idUser,token)
+    }
 
     fun create(address: Address): Call<ResponseHttp>?{
         return addressRoutes?.create(address, token)
