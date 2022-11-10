@@ -15,13 +15,15 @@ import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.address.create.ClientAddressCreateActivity
 import com.alex.deliveryapp.activities.client.payments.form.ClientPaymentFormActivity
 import com.alex.deliveryapp.adapters.AddressAdapter
-import com.alex.deliveryapp.models.Address
-import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.adapters.ShoppingCarAdapter
+import com.alex.deliveryapp.models.*
 import com.alex.deliveryapp.providers.AddressProvider
+import com.alex.deliveryapp.providers.OrdersProvider
 import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +37,7 @@ class ClientAddressListActivity : AppCompatActivity() {
     var rvAddress:RecyclerView? = null
     var adapter:AddressAdapter? = null
     var addressProvider:AddressProvider? = null
+    var ordersProvider:OrdersProvider? = null
     var sharedPref:SharedPref? = null
     var user: User? = null
 
@@ -42,11 +45,14 @@ class ClientAddressListActivity : AppCompatActivity() {
 
     val gson = Gson()
 
+    var selectedProducts = ArrayList<Product>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_address_list)
 
         sharedPref = SharedPref(this)
+        getProductsFromSharedPref()
 
         fabCreateAddress = findViewById(R.id.fab_address_create)
         btnNext = findViewById(R.id.btn_next2)
@@ -62,6 +68,7 @@ class ClientAddressListActivity : AppCompatActivity() {
         getUserFromSession()
 
         addressProvider = AddressProvider(user?.sessionToken!!)
+        ordersProvider = OrdersProvider(user?.sessionToken!!)
 
         fabCreateAddress?.setOnClickListener{ goToAddressCreate() }
 
@@ -97,11 +104,46 @@ class ClientAddressListActivity : AppCompatActivity() {
         })
     }
 
+    private fun getProductsFromSharedPref(){
+        //Si existe una orden en sharedPreferences
+        if (!sharedPref?.getData(Constants.ORDER).isNullOrBlank()){
+            //Aqui indicamos que vamos a transformar una lista de tipo Gson a una lista de tipo product
+            val type = object: TypeToken<ArrayList<Product>>(){}.type
+            //Aqui le indicamos que los datos que se obtienen del sharePref se convierte a un tipo de objeto product
+            selectedProducts = gson.fromJson(sharedPref?.getData(Constants.ORDER), type)
+        }
+    }
+
+    private fun createOrder(idAddress:String){
+        val order = Order(
+            products = selectedProducts,
+            idClient = user?.id!!,
+            idAddress = idAddress
+        )
+
+        ordersProvider?.create(order)?.enqueue(object: Callback<ResponseHttp>{
+            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
+                if (response.body() != null){
+                    Toast.makeText(this@ClientAddressListActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
+                }else{
+                    Toast.makeText(this@ClientAddressListActivity, "Ocurrio un error en el servidor", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+
+            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                Toast.makeText(this@ClientAddressListActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+
+        })
+    }
+
     private fun getAddressFromSession(){
         //Si el usuario ya elegio una dirección
         if (!sharedPref?.getData(Constants.ADDRESS).isNullOrBlank()){
-            gson.fromJson(sharedPref?.getData(Constants.ADDRESS), Address::class.java)
-            goToPaymentsForm()
+            val a = gson.fromJson(sharedPref?.getData(Constants.ADDRESS), Address::class.java)
+            createOrder(a.id!!)
+            //goToPaymentsForm()
         }else{
             Toast.makeText(this, "Selecciona una dirección para continuar", Toast.LENGTH_LONG).show()
         }
