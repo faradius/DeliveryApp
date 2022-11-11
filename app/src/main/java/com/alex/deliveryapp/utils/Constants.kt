@@ -19,4 +19,6 @@ object Constants {
     const val COUNTRY = "country"
     const val LAT = "lat"
     const val LNG = "lng"
+
+    const val STATUS = "status"
 }
