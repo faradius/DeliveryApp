@@ -17,11 +17,11 @@ import retrofit2.http.Path
 
 interface OrdersRoutes {
 
-//    @GET("address/findByUser/{id_user}")
-//    fun getAddress(
-//        @Path("id_user") idUser:String,
-//        @Header("Authorization") token: String
-//    ): Call<ArrayList<Address>> //Esto es lo que estamos esperando en recibir en este call
+    @GET("orders/findByStatus/{status}")
+    fun getOrdersByStatus(
+        @Path("status") status:String,
+        @Header("Authorization") token: String
+    ): Call<ArrayList<Order>> //Esto es lo que estamos esperando en recibir en este call
 
 
     @POST("orders/create")
