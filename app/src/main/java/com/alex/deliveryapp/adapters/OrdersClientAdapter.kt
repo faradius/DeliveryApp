@@ -40,7 +40,7 @@ class OrdersClientAdapter(val context: Activity, val orders: ArrayList<Order>):R
 
         holder.tvOrderId.text = "Order #${order.id}"
         holder.tvDate.text = "${order.timestamp}"
-        holder.tvAddress.text = "${order.idAddress}"
+        holder.tvAddress.text = "${order.address?.address}"
 
         holder.itemView.setOnClickListener {
 

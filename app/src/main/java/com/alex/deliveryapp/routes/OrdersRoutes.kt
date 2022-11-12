@@ -23,6 +23,13 @@ interface OrdersRoutes {
         @Header("Authorization") token: String
     ): Call<ArrayList<Order>> //Esto es lo que estamos esperando en recibir en este call
 
+    @GET("orders/findByClientAndStatus/{id_client}/{status}")
+    fun getOrdersByClientAndStatus(
+        @Path("id_client") idClient:String,
+        @Path("status") status:String,
+        @Header("Authorization") token: String
+    ): Call<ArrayList<Order>> //Esto es lo que estamos esperando en recibir en este call
+
 
     @POST("orders/create")
     fun create(
