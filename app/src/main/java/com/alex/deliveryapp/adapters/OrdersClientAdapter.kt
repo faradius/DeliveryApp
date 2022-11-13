@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.address.list.ClientAddressListActivity
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
+import com.alex.deliveryapp.activities.client.orders.detail.ClientOrdersDetailActivity
 import com.alex.deliveryapp.activities.client.payments.form.ClientPaymentFormActivity
 import com.alex.deliveryapp.activities.client.products.list.ClientProductsListActivity
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
@@ -42,10 +43,14 @@ class OrdersClientAdapter(val context: Activity, val orders: ArrayList<Order>):R
         holder.tvDate.text = "${order.timestamp}"
         holder.tvAddress.text = "${order.address?.address}"
 
-        holder.itemView.setOnClickListener {
+        holder.itemView.setOnClickListener {goToOrderDetail(order)}
 
-        }
+    }
 
+    private fun goToOrderDetail(order:Order){
+        val i = Intent(context, ClientOrdersDetailActivity::class.java)
+        i.putExtra(Constants.ORDER, order.toJson())
+        context.startActivity(i)
     }
 
     //Metodo que define el tamaño de elementos que tiene la vista
