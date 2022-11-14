@@ -1,6 +1,7 @@
 package com.alex.deliveryapp.providers
 
 import com.alex.deliveryapp.api.ApiRoutes
+import com.alex.deliveryapp.models.Category
 import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.routes.UsersRoutes
@@ -22,6 +23,10 @@ class UsersProvider(val token:String? = null) {
         if(token != null){
             userRoutesToken = api.getUsersRoutesWithToken(token!!)
         }
+    }
+
+    fun getDeliveryMen():Call<ArrayList<User>>?{
+        return userRoutesToken?.getDeliveryMen(token!!)
     }
 
     fun register(user:User): Call<ResponseHttp>?{

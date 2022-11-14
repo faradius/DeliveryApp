@@ -32,4 +32,8 @@ class OrdersProvider(val token: String) {
         return ordersRoutes?.create(order, token)
     }
 
+    fun updateToDispatched(order: Order): Call<ResponseHttp>?{
+        return ordersRoutes?.updateToDispatched(order, token)
+    }
+
 }

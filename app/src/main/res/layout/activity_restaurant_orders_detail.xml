@@ -110,12 +110,24 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tv_delivery_available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repartidores Disponibles"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/secundaryColor"
+            android:visibility="gone"/>
+
         <Spinner
             android:id="@+id/spinner_delivery_men"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="20dp"/>
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -145,14 +157,15 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_register"
+            android:id="@+id/btn_update_delivery_order_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="20dp"
             android:text="ASIGNAR REPARTIDOR"
             android:backgroundTint="@color/green"
-            android:background="@drawable/rounded_button"/>
+            android:background="@drawable/rounded_button"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

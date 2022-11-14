@@ -27,7 +27,7 @@ class User(
     val roles: ArrayList<Rol>? = null
 ){
     override fun toString(): String {
-        return "User(id=$id, name='$name', lastName='$lastName', email='$email', phone='$phone', password='$password', image=$image, sessionToken=$sessionToken, isAvailable=$isAvailable, roles=$roles)"
+        return "$name $lastName"
     }
 
     //Transformamos este tipo de modelo a un tipo JSON
