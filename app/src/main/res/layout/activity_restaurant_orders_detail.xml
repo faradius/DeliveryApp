@@ -110,6 +110,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+
+            <TextView
+                android:id="@+id/tv_delivery_assigned_order_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repartidor: "
+                android:textStyle="bold"
+                android:textColor="@color/secundaryColor"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tv_delivery_order_detail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre del repartidor"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_delivery_available"
             android:layout_width="wrap_content"

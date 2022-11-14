@@ -38,6 +38,8 @@ class RestaurantOrdersDetailActivity : AppCompatActivity() {
     var tvDateOrderDetail:TextView? = null
     var tvTotalOrderDetail:TextView? = null
     var tvStatusOrderDetail:TextView? = null
+    var tvDeliveryOrderDetail: TextView? = null
+    var tvDeliveryAssignedOrderDetail: TextView? = null
     var rvProductsOrderDetail:RecyclerView? = null
     var btnUpdateDeliveryOrderDetail: Button? = null
 
@@ -77,6 +79,8 @@ class RestaurantOrdersDetailActivity : AppCompatActivity() {
         tvDateOrderDetail = findViewById(R.id.tv_date_order_detail)
         tvTotalOrderDetail = findViewById(R.id.tv_total_order_detail)
         tvStatusOrderDetail = findViewById(R.id.tv_status_order_detail)
+        tvDeliveryOrderDetail = findViewById(R.id.tv_delivery_order_detail)
+        tvDeliveryAssignedOrderDetail = findViewById(R.id.tv_delivery_assigned_order_detail)
         tvDeliveryAvailable = findViewById(R.id.tv_delivery_available)
 
         spinnerDeliveryMen = findViewById(R.id.spinner_delivery_men)
@@ -93,6 +97,7 @@ class RestaurantOrdersDetailActivity : AppCompatActivity() {
         tvAddressOrderDetail?.text = order?.address?.address
         tvDateOrderDetail?.text = "${order?.timestamp.toString()}"
         tvStatusOrderDetail?.text = order?.status
+        tvDeliveryOrderDetail?.text = "${order?.delivery?.name} ${order?.delivery?.lastName}"
 
         Log.d(TAG,"Orden: ${order.toString()}")
 
@@ -103,6 +108,11 @@ class RestaurantOrdersDetailActivity : AppCompatActivity() {
             btnUpdateDeliveryOrderDetail?.visibility = View.VISIBLE
             tvDeliveryAvailable?.visibility = View.VISIBLE
             spinnerDeliveryMen?.visibility = View.VISIBLE
+        }
+
+        if (order?.status != "PAGADO"){
+            tvDeliveryAssignedOrderDetail?.visibility = View.VISIBLE
+            tvDeliveryOrderDetail?.visibility = View.VISIBLE
         }
 
         btnUpdateDeliveryOrderDetail?.setOnClickListener { updateOrder() }
