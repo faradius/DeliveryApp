@@ -3,13 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.delivery.orders.map.DeliveryOrdersMapActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+    <Button
+        android:id="@+id/btn_accept_location"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="MAPA DE ENTREGA"
-        android:layout_gravity="center"/>
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="25dp"
+        android:text="Acceptar"
+        android:background="@drawable/rounded_button"
+        android:layout_gravity="bottom"
+        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
