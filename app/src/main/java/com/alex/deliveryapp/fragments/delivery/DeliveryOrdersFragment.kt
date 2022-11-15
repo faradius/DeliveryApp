@@ -36,8 +36,8 @@ class DeliveryOrdersFragment : Fragment() {
         tabLayout?.setSelectedTabIndicatorColor(Color.BLACK)
         tabLayout?.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.secundaryColor))
         tabLayout?.tabTextColors = ContextCompat.getColorStateList(requireContext(), R.color.black)
-        tabLayout?.tabMode = TabLayout.MODE_SCROLLABLE
-        tabLayout?.isInlineLabel = true
+//        tabLayout?.tabMode = TabLayout.MODE_SCROLLABLE
+//        tabLayout?.isInlineLabel = true
 
         var numberOfTabs = 3
 

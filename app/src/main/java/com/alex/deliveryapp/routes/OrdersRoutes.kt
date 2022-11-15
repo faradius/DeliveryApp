@@ -30,6 +30,12 @@ interface OrdersRoutes {
         @Header("Authorization") token: String
     ): Call<ArrayList<Order>> //Esto es lo que estamos esperando en recibir en este call
 
+    @GET("orders/findByDeliveryAndStatus/{id_delivery}/{status}")
+    fun getOrdersByDeliveryAndStatus(
+        @Path("id_delivery") idDelivery:String,
+        @Path("status") status:String,
+        @Header("Authorization") token: String
+    ): Call<ArrayList<Order>> //Esto es lo que estamos esperando en recibir en este call
 
     @POST("orders/create")
     fun create(
@@ -39,6 +45,12 @@ interface OrdersRoutes {
 
     @PUT("orders/updateToDispatched")
     fun updateToDispatched(
+        @Body order: Order,
+        @Header("Authorization") token: String
+    ): Call<ResponseHttp>
+
+    @PUT("orders/updateToOnTheWay")
+    fun updateToOnTheWay(
         @Body order: Order,
         @Header("Authorization") token: String
     ): Call<ResponseHttp>

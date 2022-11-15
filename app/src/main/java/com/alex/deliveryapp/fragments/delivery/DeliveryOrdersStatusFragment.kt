@@ -58,7 +58,7 @@ class DeliveryOrdersStatusFragment : Fragment() {
     }
 
     private fun getOrders(){
-        ordersProvider?.getOrdersByStatus(status)?.enqueue(object: Callback<ArrayList<Order>>{
+        ordersProvider?.getOrdersByDeliveryAndStatus(user?.id!!, status)?.enqueue(object: Callback<ArrayList<Order>>{
             override fun onResponse(
                 call: Call<ArrayList<Order>>,
                 response: Response<ArrayList<Order>>

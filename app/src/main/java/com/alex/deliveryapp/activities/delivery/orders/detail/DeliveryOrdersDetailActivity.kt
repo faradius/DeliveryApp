@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
+import com.alex.deliveryapp.activities.delivery.orders.map.DeliveryOrdersMapActivity
 import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity
 import com.alex.deliveryapp.adapters.OrderProductsAdapter
 import com.alex.deliveryapp.models.Category
@@ -42,6 +44,7 @@ class DeliveryOrdersDetailActivity : AppCompatActivity() {
 
     var rvProductsOrderDetail:RecyclerView? = null
     var btnUpdateDeliveryOrderDetail: Button? = null
+    var btnGoToMapDeliveryOrderDetail: Button? = null
 
 
     var adapter: OrderProductsAdapter? = null
@@ -81,6 +84,7 @@ class DeliveryOrdersDetailActivity : AppCompatActivity() {
 
 
         btnUpdateDeliveryOrderDetail = findViewById(R.id.btn_update_delivery_order_detail)
+        btnGoToMapDeliveryOrderDetail = findViewById(R.id.btn_go_to_map_delivery)
 
         rvProductsOrderDetail = findViewById(R.id.rv_products_order_detail)
         rvProductsOrderDetail?.layoutManager = LinearLayoutManager(this)
@@ -102,38 +106,41 @@ class DeliveryOrdersDetailActivity : AppCompatActivity() {
         if (order?.status == "DESPACHADO"){
             btnUpdateDeliveryOrderDetail?.visibility = View.VISIBLE
         }
+        if (order?.status == "EN CAMINO"){
+            btnGoToMapDeliveryOrderDetail?.visibility = View.VISIBLE
+        }
 
 
         btnUpdateDeliveryOrderDetail?.setOnClickListener { updateOrder() }
+        btnGoToMapDeliveryOrderDetail?.setOnClickListener { goToMap() }
     }
 
     private fun updateOrder(){
-        order?.idDelivery = idDelivery
-        ordersProvider?.updateToDispatched(order!!)?.enqueue(object: Callback<ResponseHttp>{
+
+        ordersProvider?.updateToOnTheWay(order!!)?.enqueue(object: Callback<ResponseHttp>{
             override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
                 if (response.body() != null){
                     if (response.body()?.isSuccess == true){
-                        Toast.makeText(this@DeliveryOrdersDetailActivity, "Repartidor asignado correctamente", Toast.LENGTH_SHORT).show()
-                        goToOrders()
+                        Toast.makeText(this@DeliveryOrdersDetailActivity, "Entrega Iniciada", Toast.LENGTH_LONG).show()
+                        goToMap()
                     }else{
-                        Toast.makeText(this@DeliveryOrdersDetailActivity, "No se pudo asignar el repartidor", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@DeliveryOrdersDetailActivity, "No se pudo asignar el repartidor", Toast.LENGTH_LONG).show()
                     }
                 }else{
-                    Toast.makeText(this@DeliveryOrdersDetailActivity, "No hubo respuesta del servidor", Toast.LENGTH_SHORT)
+                    Toast.makeText(this@DeliveryOrdersDetailActivity, "No hubo respuesta del servidor", Toast.LENGTH_LONG)
                         .show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
-                Toast.makeText(this@DeliveryOrdersDetailActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DeliveryOrdersDetailActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
             }
 
         })
     }
 
-    private fun goToOrders(){
-        val i = Intent(this, RestaurantHomeActivity::class.java)
-        i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+    private fun goToMap(){
+        val i = Intent(this, DeliveryOrdersMapActivity::class.java)
         startActivity(i)
     }
 

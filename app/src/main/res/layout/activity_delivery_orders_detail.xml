@@ -148,6 +148,17 @@
             android:background="@drawable/rounded_button"
             android:visibility="gone"/>
 
+        <Button
+            android:id="@+id/btn_go_to_map_delivery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="IR AL MAPA"
+            android:backgroundTint="@color/green"
+            android:background="@drawable/rounded_button"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
