@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
+import com.maps.route.extensions.drawRouteOnMap
 
 class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var TAG = "DeliveryAddressMap"
@@ -101,6 +103,21 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap?.uiSettings?.isZoomControlsEnabled = true
     }
 
+    private fun drawRoute(){
+        val addressLocation = LatLng(order?.address?.lat!!, order?.address?.lng!!)
+
+        googleMap?.drawRouteOnMap(
+            getString(R.string.google_map_api_key),
+            source = myLocationLatLng!!,
+            destination = addressLocation,
+            context = this,
+            color = Color.BLACK,
+            polygonWidth = 10,
+            boundMarkers = false,
+            markers = false
+        )
+    }
+
     private fun removeDeliveryMarker(){
         markerDelivery?.remove()
     }
@@ -153,6 +170,7 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     removeDeliveryMarker()
                     addDeliveryMarker()
                     addAddressMarker()
+                    drawRoute()
 
                     googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
                         CameraPosition.builder().target(
