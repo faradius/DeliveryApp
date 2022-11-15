@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
+import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -19,8 +20,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.models.Order
+import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.providers.OrdersProvider
 import com.alex.deliveryapp.utils.Constants
+import com.alex.deliveryapp.utils.SharedPref
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,6 +41,9 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.maps.route.extensions.drawRouteOnMap
 import de.hdodenhof.circleimageview.CircleImageView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var TAG = "DeliveryAddressMap"
@@ -65,6 +74,13 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     val REQUEST_PHONE_CALL = 30
 
+    var ordersProvider: OrdersProvider? = null
+
+    var user:User? = null
+    var sharedPref: SharedPref? = null
+
+    var distanceBetween = 0.0f
+
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
             //Con esto podemos ver la localización en la que nos encontramos
@@ -78,6 +94,10 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 //                ).zoom(15f).build()
 //            ))
 
+            distanceBetween = getDistanceBetween(myLocationLatLng!!, addressLatLng!!)
+
+            Log.d(TAG, "Distancia: $distanceBetween")
+
             //Eliminamos el marcador anterior y despues redibujamos el marcador
             removeDeliveryMarker()
             //Cada vez que hay un cambio volvemos a dibujar el marcador
@@ -90,7 +110,14 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_delivery_orders_map)
 
+        sharedPref = SharedPref(this)
+        getUserFromSession()
+
+        ordersProvider = OrdersProvider(user?.sessionToken!!)
+
         order = gson.fromJson(intent.getStringExtra(Constants.ORDER), Order::class.java)
+
+        addressLatLng = LatLng(order?.address?.lat!!, order?.address?.lng!!)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
@@ -117,7 +144,14 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
 
-        btnDelivered?.setOnClickListener {  }
+        btnDelivered?.setOnClickListener {
+            if (distanceBetween <= 350){
+                updateOrder()
+            }else{
+                Toast.makeText(this, "Acercate mas al lugar de entrega", Toast.LENGTH_LONG).show()
+            }
+        }
+
         ivPhone?.setOnClickListener {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL)
@@ -126,6 +160,47 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+    }
+
+    private fun updateOrder(){
+        ordersProvider?.updateToDelivered(order!!)?.enqueue(object: Callback<ResponseHttp>{
+            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
+                if (response.body() != null){
+                    Toast.makeText(this@DeliveryOrdersMapActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
+
+                    if (response.body()?.isSuccess == true){
+                        goToHome()
+                    }
+
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                Toast.makeText(this@DeliveryOrdersMapActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+
+        } )
+    }
+
+    private fun goToHome(){
+        val i = Intent(this, DeliveryHomeActivity::class.java)
+        startActivity(i)
+    }
+
+    private fun getDistanceBetween(fromLatLng: LatLng, toLatLng: LatLng): Float{
+        var distance = 0.0f
+
+        val from = Location("")
+        val to = Location("")
+
+        from.latitude = fromLatLng.latitude
+        from.longitude = fromLatLng.longitude
+        to.latitude = toLatLng.latitude
+        to.longitude = toLatLng.longitude
+
+        distance = from.distanceTo(to)
+
+        return distance
     }
 
     private fun call(){
@@ -288,6 +363,15 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         if (requestCode == REQUEST_PHONE_CALL){
             call()
+        }
+    }
+
+    private fun getUserFromSession(){
+        val gson = Gson()
+
+        //Si el usuario existe en sesión
+        if (!sharedPref?.getData("user").isNullOrBlank()){
+            user = gson.fromJson(sharedPref?.getData("user"), User::class.java)
         }
     }
 }

@@ -55,4 +55,10 @@ interface OrdersRoutes {
         @Header("Authorization") token: String
     ): Call<ResponseHttp>
 
+    @PUT("orders/updateToDelivered")
+    fun updateToDelivered(
+        @Body order: Order,
+        @Header("Authorization") token: String
+    ): Call<ResponseHttp>
+
 }
