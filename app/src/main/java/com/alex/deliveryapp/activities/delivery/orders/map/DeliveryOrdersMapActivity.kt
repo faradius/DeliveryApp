@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.models.Order
 import com.alex.deliveryapp.utils.Constants
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
 
 class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var TAG = "DeliveryAddressMap"
@@ -45,12 +47,29 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var addressLatLng: LatLng? = null
 
     var markerDelivery: Marker? = null
+    var markerAddress: Marker? = null
     var myLocationLatLng: LatLng? = null
+
+    var order: Order? = null
+    var gson = Gson()
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
             //Con esto podemos ver la localización en la que nos encontramos
             var lastLocation = locationResult.lastLocation
+            //Aqui logramos actualizar la locación del repartidor en tiempo real, se ejecuta varias veces cuando detecte un cambio
+            myLocationLatLng = LatLng(lastLocation.latitude, lastLocation.longitude)
+
+//            googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
+//                CameraPosition.builder().target(
+//                    LatLng(myLocationLatLng?.latitude!!, myLocationLatLng?.longitude!!)
+//                ).zoom(15f).build()
+//            ))
+
+            //Eliminamos el marcador anterior y despues redibujamos el marcador
+            removeDeliveryMarker()
+            //Cada vez que hay un cambio volvemos a dibujar el marcador
+            addDeliveryMarker()
             Log.d("LOCALIZACION", "Callback: $lastLocation ")
         }
     }
@@ -58,6 +77,8 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_delivery_orders_map)
+
+        order = gson.fromJson(intent.getStringExtra(Constants.ORDER), Order::class.java)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
@@ -76,6 +97,12 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
+        //Mostrar los botones de zoom
+        googleMap?.uiSettings?.isZoomControlsEnabled = true
+    }
+
+    private fun removeDeliveryMarker(){
+        markerDelivery?.remove()
     }
 
     private fun addDeliveryMarker(){
@@ -84,6 +111,17 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 .position(myLocationLatLng)
                 .title("Mi posición")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.delivery_man))
+        )
+    }
+
+    private fun addAddressMarker(){
+        val addressLocation = LatLng(order?.address?.lat!!, order?.address?.lng!!)
+
+        markerAddress = googleMap?.addMarker(
+            MarkerOptions()
+                .position(addressLocation)
+                .title("Entregar Aqui")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.home))
         )
     }
 
@@ -102,22 +140,26 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         //Primero verificamos los permisos
         if(checkPermission()){
             if (isLocationEnabled()){
+
+                //Iniciamos la posición en tiempo real
+                requestNewLocationData()
+
+                //Este nos da la ubicación actual pero se ejecuta una sola vez
                 fusedLocationClient?.lastLocation?.addOnCompleteListener {  task ->
 
                     var location = task.result
                     myLocationLatLng = LatLng(location.latitude, location.longitude)
 
+                    removeDeliveryMarker()
                     addDeliveryMarker()
+                    addAddressMarker()
 
-                    if (location == null){
-                        requestNewLocationData()
-                    }else{
-                        googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
-                            CameraPosition.builder().target(
-                                LatLng(location.latitude, location.longitude)
-                            ).zoom(15f).build()
-                        ))
-                    }
+                    googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
+                        CameraPosition.builder().target(
+                            LatLng(location.latitude, location.longitude)
+                        ).zoom(15f).build()
+                    ))
+
                 }
             }else{
                 Toast.makeText(this, "Habilita la localización", Toast.LENGTH_LONG).show()
@@ -149,6 +191,7 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         ) {
             return
         }
+        //Este inicializa la posición en tiempo real
         fusedLocationClient?.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
     }
 

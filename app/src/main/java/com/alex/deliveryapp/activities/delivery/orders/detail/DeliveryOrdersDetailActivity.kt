@@ -21,6 +21,7 @@ import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.OrdersProvider
 import com.alex.deliveryapp.providers.UsersProvider
+import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
 import com.google.gson.Gson
 import retrofit2.Call
@@ -141,6 +142,7 @@ class DeliveryOrdersDetailActivity : AppCompatActivity() {
 
     private fun goToMap(){
         val i = Intent(this, DeliveryOrdersMapActivity::class.java)
+        i.putExtra(Constants.ORDER, order?.toJson())
         startActivity(i)
     }
 
