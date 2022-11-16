@@ -162,6 +162,13 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (locationCallback != null && fusedLocationClient != null){
+            fusedLocationClient?.removeLocationUpdates(locationCallback)
+        }
+    }
+
     private fun updateOrder(){
         ordersProvider?.updateToDelivered(order!!)?.enqueue(object: Callback<ResponseHttp>{
             override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
@@ -184,6 +191,7 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun goToHome(){
         val i = Intent(this, DeliveryHomeActivity::class.java)
+        i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(i)
     }
 
