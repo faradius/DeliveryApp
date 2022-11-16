@@ -1,4 +1,4 @@
-package com.alex.deliveryapp.activities.delivery.orders.map
+package com.alex.deliveryapp.activities.client.orders.map
 
 import android.Manifest
 import android.content.Context
@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -44,8 +45,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
-    var TAG = "DeliveryAddressMap"
+class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
+    var TAG = "ClientOrdersMap"
 
     var googleMap: GoogleMap? = null
 
@@ -67,7 +68,6 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var tvNameClient: TextView? = null
     var tvAddress: TextView? = null
     var tvNeighborhood: TextView? = null
-    var btnDelivered: Button? = null
     var ivCircleUser: CircleImageView? = null
     var ivPhone: ImageView? = null
 
@@ -78,7 +78,6 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var user:User? = null
     var sharedPref: SharedPref? = null
 
-    var distanceBetween = 0.0f
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
@@ -93,10 +92,6 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 //                ).zoom(15f).build()
 //            ))
 
-            distanceBetween = getDistanceBetween(myLocationLatLng!!, addressLatLng!!)
-
-            Log.d(TAG, "Distancia: $distanceBetween")
-
             //Eliminamos el marcador anterior y despues redibujamos el marcador
             removeDeliveryMarker()
             //Cada vez que hay un cambio volvemos a dibujar el marcador
@@ -107,7 +102,7 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_delivery_orders_map)
+        setContentView(R.layout.activity_client_orders_map)
 
         sharedPref = SharedPref(this)
         getUserFromSession()
@@ -130,25 +125,15 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         tvNeighborhood = findViewById(R.id.tv_neighborhood_orders_delivery)
         ivCircleUser = findViewById(R.id.iv_circle_user_orders_delivery)
         ivPhone = findViewById(R.id.iv_phone_orders_delivery)
-        btnDelivered = findViewById(R.id.btn_delivery_order)
 
         getLastLocation()
 
-        tvNameClient?.text = "${order?.client?.name} ${order?.client?.lastName}"
+        tvNameClient?.text = "${order?.delivery?.name} ${order?.delivery?.lastName}"
         tvAddress?.text = order?.address?.address
         tvNeighborhood?.text = order?.address?.neighborhood
 
         if (!order?.client?.image.isNullOrBlank()){
-            Glide.with(this).load(order?.client?.image).into(ivCircleUser!!)
-        }
-
-
-        btnDelivered?.setOnClickListener {
-            if (distanceBetween <= 350){
-                updateOrder()
-            }else{
-                Toast.makeText(this, "Acercate mas al lugar de entrega", Toast.LENGTH_LONG).show()
-            }
+            Glide.with(this).load(order?.delivery?.image).into(ivCircleUser!!)
         }
 
         ivPhone?.setOnClickListener {
@@ -158,7 +143,6 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 call()
             }
         }
-
     }
 
     override fun onDestroy() {
@@ -168,51 +152,15 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun updateOrder(){
-        ordersProvider?.updateToDelivered(order!!)?.enqueue(object: Callback<ResponseHttp>{
-            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
-                if (response.body() != null){
-                    Toast.makeText(this@DeliveryOrdersMapActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
-
-                    if (response.body()?.isSuccess == true){
-                        goToHome()
-                    }
-
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
-                Toast.makeText(this@DeliveryOrdersMapActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
-            }
-
-        } )
-    }
-
     private fun goToHome(){
         val i = Intent(this, DeliveryHomeActivity::class.java)
         i.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(i)
     }
 
-    private fun getDistanceBetween(fromLatLng: LatLng, toLatLng: LatLng): Float{
-        var distance = 0.0f
-
-        val from = Location("")
-        val to = Location("")
-
-        from.latitude = fromLatLng.latitude
-        from.longitude = fromLatLng.longitude
-        to.latitude = toLatLng.latitude
-        to.longitude = toLatLng.longitude
-
-        distance = from.distanceTo(to)
-
-        return distance
-    }
-
     private fun call(){
         val i = Intent(Intent.ACTION_CALL)
-        i.data = Uri.parse("tel:${order?.client?.phone}")
+        i.data = Uri.parse("tel:${order?.delivery?.phone}")
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){
             Toast.makeText(this, "Permiso denegado para realizar la llamada", Toast.LENGTH_SHORT).show()
@@ -271,9 +219,6 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         //Primero verificamos los permisos
         if(checkPermission()){
             if (isLocationEnabled()){
-
-                //Iniciamos la posición en tiempo real
-                requestNewLocationData()
 
                 //Este nos da la ubicación actual pero se ejecuta una sola vez
                 fusedLocationClient?.lastLocation?.addOnCompleteListener {  task ->
