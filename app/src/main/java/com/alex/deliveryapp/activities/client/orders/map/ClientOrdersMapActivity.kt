@@ -78,6 +78,8 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     var user:User? = null
     var sharedPref: SharedPref? = null
 
+    var deliveryLatLng: LatLng? = null
+
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
@@ -107,9 +109,13 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         sharedPref = SharedPref(this)
         getUserFromSession()
 
-        ordersProvider = OrdersProvider(user?.sessionToken!!)
-
         order = gson.fromJson(intent.getStringExtra(Constants.ORDER), Order::class.java)
+        if (order?.lat != null && order?.lng != null){
+            deliveryLatLng = LatLng(order?.lat!!, order?.lng!!)
+        }
+
+
+        ordersProvider = OrdersProvider(user?.sessionToken!!)
 
         addressLatLng = LatLng(order?.address?.lat!!, order?.address?.lng!!)
 
@@ -177,18 +183,21 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun drawRoute(){
-        val addressLocation = LatLng(order?.address?.lat!!, order?.address?.lng!!)
+        if (deliveryLatLng != null){
+            val addressLocation = LatLng(order?.address?.lat!!, order?.address?.lng!!)
 
-        googleMap?.drawRouteOnMap(
-            getString(R.string.google_map_api_key),
-            source = myLocationLatLng!!,
-            destination = addressLocation,
-            context = this,
-            color = Color.BLACK,
-            polygonWidth = 10,
-            boundMarkers = false,
-            markers = false
-        )
+            googleMap?.drawRouteOnMap(
+                getString(R.string.google_map_api_key),
+                source = deliveryLatLng!!,
+                destination = addressLocation,
+                context = this,
+                color = Color.BLACK,
+                polygonWidth = 10,
+                boundMarkers = false,
+                markers = false
+            )
+        }
+
     }
 
     private fun removeDeliveryMarker(){
@@ -196,12 +205,14 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addDeliveryMarker(){
-        markerDelivery = googleMap?.addMarker(
-            MarkerOptions()
-                .position(myLocationLatLng)
-                .title("Mi posición")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.delivery_man))
-        )
+        if (deliveryLatLng != null){
+            markerDelivery = googleMap?.addMarker(
+                MarkerOptions()
+                    .position(deliveryLatLng)
+                    .title("Posición del repartidor")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.delivery_man))
+            )
+        }
     }
 
     private fun addAddressMarker(){
@@ -224,19 +235,25 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 fusedLocationClient?.lastLocation?.addOnCompleteListener {  task ->
 
                     var location = task.result
-                    myLocationLatLng = LatLng(location.latitude, location.longitude)
 
-                    removeDeliveryMarker()
-                    addDeliveryMarker()
-                    addAddressMarker()
-                    drawRoute()
+                    if(location!= null){
+                        myLocationLatLng = LatLng(location.latitude, location.longitude)
 
-                    googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.builder().target(
-                            LatLng(location.latitude, location.longitude)
-                        ).zoom(15f).build()
-                    ))
+                        removeDeliveryMarker()
+                        addDeliveryMarker()
+                        addAddressMarker()
+                        drawRoute()
 
+                        if (deliveryLatLng != null){
+                            googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
+                                CameraPosition.builder().target(
+                                    LatLng(deliveryLatLng?.latitude!!, deliveryLatLng?.longitude!!)
+                                ).zoom(15f).build()
+                            ))
+                        }
+
+
+                    }
                 }
             }else{
                 Toast.makeText(this, "Habilita la localización", Toast.LENGTH_LONG).show()

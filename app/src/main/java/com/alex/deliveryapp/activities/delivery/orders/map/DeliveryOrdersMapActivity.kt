@@ -267,6 +267,25 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
+    private fun updateLatLng(lat: Double, lng: Double){
+        order?.lat = lat
+        order?.lng = lng
+
+        ordersProvider?.updateLatLng(order!!)?.enqueue(object: Callback<ResponseHttp>{
+            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
+                if (response.body() != null){
+                    //Toast.makeText(this@DeliveryOrdersMapActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
+
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+                Toast.makeText(this@DeliveryOrdersMapActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+
+        } )
+    }
+
     private fun getLastLocation(){
         //Primero verificamos los permisos
         if(checkPermission()){
@@ -279,19 +298,23 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 fusedLocationClient?.lastLocation?.addOnCompleteListener {  task ->
 
                     var location = task.result
-                    myLocationLatLng = LatLng(location.latitude, location.longitude)
 
-                    removeDeliveryMarker()
-                    addDeliveryMarker()
-                    addAddressMarker()
-                    drawRoute()
+                    if(location != null){
+                        myLocationLatLng = LatLng(location.latitude, location.longitude)
 
-                    googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
-                        CameraPosition.builder().target(
-                            LatLng(location.latitude, location.longitude)
-                        ).zoom(15f).build()
-                    ))
+                        updateLatLng(location.latitude, location.longitude)
 
+                        removeDeliveryMarker()
+                        addDeliveryMarker()
+                        addAddressMarker()
+                        drawRoute()
+
+                        googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
+                            CameraPosition.builder().target(
+                                LatLng(location.latitude, location.longitude)
+                            ).zoom(15f).build()
+                        ))
+                    }
                 }
             }else{
                 Toast.makeText(this, "Habilita la localización", Toast.LENGTH_LONG).show()

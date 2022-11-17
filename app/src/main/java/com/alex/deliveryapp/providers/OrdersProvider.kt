@@ -48,4 +48,8 @@ class OrdersProvider(val token: String) {
         return ordersRoutes?.updateToDelivered(order, token)
     }
 
+    fun updateLatLng(order: Order): Call<ResponseHttp>?{
+        return ordersRoutes?.updateLatLng(order, token)
+    }
+
 }
