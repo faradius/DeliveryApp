@@ -22,11 +22,14 @@ import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.models.Order
 import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.SocketEmit
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.OrdersProvider
 import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
+import com.alex.deliveryapp.utils.SocketHandler
 import com.bumptech.glide.Glide
+import com.github.nkzawa.socketio.client.Socket
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -80,12 +83,15 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     var distanceBetween = 0.0f
 
+    var socket: Socket? = null
+
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
             //Con esto podemos ver la localización en la que nos encontramos
             var lastLocation = locationResult.lastLocation
             //Aqui logramos actualizar la locación del repartidor en tiempo real, se ejecuta varias veces cuando detecte un cambio
             myLocationLatLng = LatLng(lastLocation.latitude, lastLocation.longitude)
+            emitPosition()
 
 //            googleMap?.moveCamera(CameraUpdateFactory.newCameraPosition(
 //                CameraPosition.builder().target(
@@ -159,6 +165,24 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+        connectSocket()
+
+    }
+
+    private fun emitPosition(){
+        val data = SocketEmit(
+            id_order = order?.id!!,
+            lat = myLocationLatLng?.latitude!!,
+            lng = myLocationLatLng?.longitude!!
+        )
+
+        socket?.emit("position", data.toJson())
+    }
+
+    private fun connectSocket(){
+        SocketHandler.setSocket()
+        socket = SocketHandler.getSocket()
+        socket?.connect()
     }
 
     override fun onDestroy() {
@@ -166,6 +190,8 @@ class DeliveryOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (locationCallback != null && fusedLocationClient != null){
             fusedLocationClient?.removeLocationUpdates(locationCallback)
         }
+
+        socket?.disconnect()
     }
 
     private fun updateOrder(){

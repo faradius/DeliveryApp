@@ -23,11 +23,14 @@ import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.models.Order
 import com.alex.deliveryapp.models.ResponseHttp
+import com.alex.deliveryapp.models.SocketEmit
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.providers.OrdersProvider
 import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
+import com.alex.deliveryapp.utils.SocketHandler
 import com.bumptech.glide.Glide
+import com.github.nkzawa.socketio.client.Socket
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -80,6 +83,8 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     var deliveryLatLng: LatLng? = null
 
+    var socket: Socket? = null
+
 
     private val locationCallback = object : LocationCallback(){
         override fun onLocationResult(locationResult: LocationResult) {
@@ -95,9 +100,9 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
 //            ))
 
             //Eliminamos el marcador anterior y despues redibujamos el marcador
-            removeDeliveryMarker()
+//            removeDeliveryMarker()
             //Cada vez que hay un cambio volvemos a dibujar el marcador
-            addDeliveryMarker()
+//            addDeliveryMarker()
             Log.d("LOCALIZACION", "Callback: $lastLocation ")
         }
     }
@@ -133,6 +138,7 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         ivPhone = findViewById(R.id.iv_phone_orders_delivery)
 
         getLastLocation()
+        connectSocket()
 
         tvNameClient?.text = "${order?.delivery?.name} ${order?.delivery?.lastName}"
         tvAddress?.text = order?.address?.address
@@ -151,11 +157,31 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun connectSocket(){
+        SocketHandler.setSocket()
+        socket = SocketHandler.getSocket()
+        socket?.connect()
+
+        socket?.on("position/${order?.id}") { args ->
+            if (args[0] != null){
+                runOnUiThread {
+                    val data = gson.fromJson(args[0].toString(), SocketEmit::class.java)
+
+                    removeDeliveryMarker()
+                    addDeliveryMarker(data.lat, data.lng)
+
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (locationCallback != null && fusedLocationClient != null){
             fusedLocationClient?.removeLocationUpdates(locationCallback)
         }
+
+        socket?.disconnect()
     }
 
     private fun goToHome(){
@@ -204,15 +230,15 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
         markerDelivery?.remove()
     }
 
-    private fun addDeliveryMarker(){
-        if (deliveryLatLng != null){
-            markerDelivery = googleMap?.addMarker(
-                MarkerOptions()
-                    .position(deliveryLatLng)
-                    .title("Posición del repartidor")
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.delivery_man))
-            )
-        }
+    private fun addDeliveryMarker(lat:Double, lng:Double){
+        val location = LatLng(lat, lng)
+
+        markerDelivery = googleMap?.addMarker(
+            MarkerOptions()
+                .position(location)
+                .title("Posición del repartidor")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.delivery_man))
+        )
     }
 
     private fun addAddressMarker(){
@@ -240,7 +266,7 @@ class ClientOrdersMapActivity : AppCompatActivity(), OnMapReadyCallback {
                         myLocationLatLng = LatLng(location.latitude, location.longitude)
 
                         removeDeliveryMarker()
-                        addDeliveryMarker()
+                        addDeliveryMarker(deliveryLatLng?.latitude!!, deliveryLatLng?.longitude!!)
                         addAddressMarker()
                         drawRoute()
 
