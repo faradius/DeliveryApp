@@ -21,4 +21,7 @@ object Constants {
     const val LNG = "lng"
 
     const val STATUS = "status"
+
+    const val CARD_TOKEN = "cardToken"
+    const val FIRST_SIX_DIGITS = "firstSixDigits"
 }

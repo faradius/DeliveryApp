@@ -1,13 +1,16 @@
 package com.alex.deliveryapp.activities.client.payments.form
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.payments.installments.ClientPaymentsInstallmentsActivity
 import com.alex.deliveryapp.models.Cardholder
 import com.alex.deliveryapp.models.MercadoPagoCardTokenBody
 import com.alex.deliveryapp.providers.MercadoPagoProvider
+import com.alex.deliveryapp.utils.Constants
 import com.google.gson.JsonObject
 import io.stormotion.creditcardflow.CardFlowState
 import io.stormotion.creditcardflow.CreditCard
@@ -158,6 +161,13 @@ class ClientPaymentFormActivity : AppCompatActivity() {
         )
         mercadoPagoProvider?.createCardToken(mercadoPagoCardTokenBody)?.enqueue(object: Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+
+                if (response.body() != null){
+                    val cardToken = response.body()?.get("id")?.asString
+                    val firstSixDigits = response.body()?.get("first_six_digits")?.asString
+                    goToInstallments(cardToken!!, firstSixDigits!!)
+                }
+
                 Log.d(TAG, "Response: $response ")
                 Log.d(TAG, "body: ${response.body()} ")
             }
@@ -167,6 +177,14 @@ class ClientPaymentFormActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    private fun goToInstallments(cardToken: String, firstSixDigits: String){
+        val i = Intent(this, ClientPaymentsInstallmentsActivity::class.java)
+        i.putExtra(Constants.CARD_TOKEN, cardToken)
+        i.putExtra(Constants.FIRST_SIX_DIGITS, firstSixDigits)
+        startActivity(i)
+
     }
 
     override fun onBackPressed() {
