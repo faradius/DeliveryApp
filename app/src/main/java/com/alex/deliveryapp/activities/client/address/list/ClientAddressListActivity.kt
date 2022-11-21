@@ -115,27 +115,28 @@ class ClientAddressListActivity : AppCompatActivity() {
     }
 
     private fun createOrder(idAddress:String){
-        val order = Order(
-            products = selectedProducts,
-            idClient = user?.id!!,
-            idAddress = idAddress
-        )
+        goToPaymentsForm()
+//        val order = Order(
+//            products = selectedProducts,
+//            idClient = user?.id!!,
+//            idAddress = idAddress
+//        )
+//
+//        ordersProvider?.create(order)?.enqueue(object: Callback<ResponseHttp>{
+//            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
+//                if (response.body() != null){
+//                    Toast.makeText(this@ClientAddressListActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
+//                }else{
+//                    Toast.makeText(this@ClientAddressListActivity, "Ocurrio un error en el servidor", Toast.LENGTH_SHORT).show()
+//                }
+//
+//            }
+//
+//            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
+//                Toast.makeText(this@ClientAddressListActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+//            }
 
-        ordersProvider?.create(order)?.enqueue(object: Callback<ResponseHttp>{
-            override fun onResponse(call: Call<ResponseHttp>, response: Response<ResponseHttp>) {
-                if (response.body() != null){
-                    Toast.makeText(this@ClientAddressListActivity, "${response.body()?.message}", Toast.LENGTH_LONG).show()
-                }else{
-                    Toast.makeText(this@ClientAddressListActivity, "Ocurrio un error en el servidor", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-
-            override fun onFailure(call: Call<ResponseHttp>, t: Throwable) {
-                Toast.makeText(this@ClientAddressListActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
-            }
-
-        })
+//        })
     }
 
     private fun getAddressFromSession(){
