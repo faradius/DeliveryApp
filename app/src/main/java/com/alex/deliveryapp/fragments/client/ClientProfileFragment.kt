@@ -15,6 +15,7 @@ import com.alex.deliveryapp.activities.MainActivity
 import com.alex.deliveryapp.activities.SelectRolesActivity
 import com.alex.deliveryapp.activities.client.update.ClientUpdateActivity
 import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.utils.Constants
 import com.alex.deliveryapp.utils.SharedPref
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
@@ -92,6 +93,7 @@ class ClientProfileFragment : Fragment() {
 
     private fun logout(){
         sharedPref?.remove("user")
+        sharedPref?.remove(Constants.ORDER)
         val i = Intent(requireContext(), MainActivity::class.java)
         startActivity(i)
     }
