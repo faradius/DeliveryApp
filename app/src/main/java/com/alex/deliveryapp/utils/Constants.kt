@@ -24,4 +24,8 @@ object Constants {
 
     const val CARD_TOKEN = "cardToken"
     const val FIRST_SIX_DIGITS = "firstSixDigits"
+
+    const val PAYMENT_METHOD_ID = "paymentMethodId"
+    const val PAYMENT_STATUS = "paymentStatus"
+    const val LAST_FOUR_DIGITS = "lastFourDigits"
 }

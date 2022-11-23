@@ -1,11 +1,13 @@
 package com.alex.deliveryapp.activities.client.payments.installments
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
 import com.alex.deliveryapp.R
+import com.alex.deliveryapp.activities.client.payments.status.ClientPaymentStatusActivity
 import com.alex.deliveryapp.adapters.ShoppingCarAdapter
 import com.alex.deliveryapp.models.*
 import com.alex.deliveryapp.providers.MercadoPagoProvider
@@ -119,8 +121,15 @@ class ClientPaymentsInstallmentsActivity : AppCompatActivity() {
 
                     Log.d(TAG, "Response: $response")
                     Log.d(TAG, "Body: ${response.body()}")
+
                     Toast.makeText(this@ClientPaymentsInstallmentsActivity, response.body()?.message, Toast.LENGTH_LONG).show()
+
+                    val status = response.body()?.data?.get("status")?.asString
+                    val lastFour = response.body()?.data?.get("card")?.asJsonObject?.get("last_four_digits")?.asString
+                    goToPaymentsStatus(paymentMethodId, status!!, lastFour!!)
+
                 }else{
+                    goToPaymentsStatus(paymentMethodId, "denied", "")
                     Toast.makeText(this@ClientPaymentsInstallmentsActivity, "No hubo una respuesta exitosa", Toast.LENGTH_LONG).show()
                 }
             }
@@ -131,6 +140,15 @@ class ClientPaymentsInstallmentsActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    private fun goToPaymentsStatus(paymentMethodId: String, paymentStatus: String, lastFourDigits: String){
+        val i = Intent(this, ClientPaymentStatusActivity::class.java)
+        i.putExtra(Constants.PAYMENT_METHOD_ID, paymentMethodId)
+        i.putExtra(Constants.PAYMENT_STATUS, paymentStatus)
+        i.putExtra(Constants.LAST_FOUR_DIGITS, lastFourDigits)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(i)
     }
 
     private fun getInstallments(){
