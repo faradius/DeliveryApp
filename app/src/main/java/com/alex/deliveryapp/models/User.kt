@@ -21,6 +21,8 @@ class User(
     val image: String? = null,
     @SerializedName("session_token")
     val sessionToken: String? = null,
+    @SerializedName("notification_token")
+    var notificationToken: String? = null,
     @SerializedName("is_available")
     val isAvailable: Boolean? = null,
     @SerializedName("roles")

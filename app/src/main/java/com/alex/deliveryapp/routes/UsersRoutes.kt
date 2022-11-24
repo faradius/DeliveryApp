@@ -34,4 +34,10 @@ interface UsersRoutes {
 
     @PUT("users/updateWithoutImage")
     fun updateWithoutImage(@Body user:User, @Header("Authorization") token: String): Call<ResponseHttp>
+
+    @PUT("users/updateNotificationToken")
+    fun updateNotificationToken(
+        @Body user:User,
+        @Header("Authorization") token: String
+    ): Call<ResponseHttp>
 }

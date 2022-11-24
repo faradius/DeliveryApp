@@ -12,6 +12,7 @@ import com.alex.deliveryapp.fragments.client.ClientCategoriesFragment
 import com.alex.deliveryapp.fragments.client.ClientOrdersFragment
 import com.alex.deliveryapp.fragments.client.ClientProfileFragment
 import com.alex.deliveryapp.models.User
+import com.alex.deliveryapp.providers.UsersProvider
 import com.alex.deliveryapp.utils.SharedPref
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
@@ -23,6 +24,8 @@ class ClientHomeActivity : AppCompatActivity() {
     var sharedPref: SharedPref? = null
 
     var bottomNavigation: BottomNavigationView? = null
+    var usersProvider: UsersProvider? = null
+    var user:User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +61,13 @@ class ClientHomeActivity : AppCompatActivity() {
         }
 
         getUserFromSession()
+
+        usersProvider = UsersProvider(token = user?.sessionToken)
+        createToken()
+    }
+
+    private fun createToken(){
+        usersProvider?.createToken(user!!, this)
     }
 
     private fun openFragment(fragment: Fragment){
@@ -72,7 +82,7 @@ class ClientHomeActivity : AppCompatActivity() {
 
         //Si el usuario existe en sesión
         if (!sharedPref?.getData("user").isNullOrBlank()){
-            val user = gson.fromJson(sharedPref?.getData("user"), User::class.java)
+            user = gson.fromJson(sharedPref?.getData("user"), User::class.java)
             Log.d(TAG, "Usuario: $user")
         }
     }
