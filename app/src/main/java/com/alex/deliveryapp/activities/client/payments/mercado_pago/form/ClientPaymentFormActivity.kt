@@ -1,4 +1,4 @@
-package com.alex.deliveryapp.activities.client.payments.form
+package com.alex.deliveryapp.activities.client.payments.mercado_pago.form
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.alex.deliveryapp.R
-import com.alex.deliveryapp.activities.client.payments.installments.ClientPaymentsInstallmentsActivity
+import com.alex.deliveryapp.activities.client.payments.mercado_pago.installments.ClientPaymentsInstallmentsActivity
 import com.alex.deliveryapp.models.Cardholder
 import com.alex.deliveryapp.models.MercadoPagoCardTokenBody
 import com.alex.deliveryapp.providers.MercadoPagoProvider

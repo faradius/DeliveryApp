@@ -1,4 +1,4 @@
-package com.alex.deliveryapp.activities.client.payments.installments
+package com.alex.deliveryapp.activities.client.payments.mercado_pago.installments
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import com.alex.deliveryapp.R
-import com.alex.deliveryapp.activities.client.payments.status.ClientPaymentStatusActivity
+import com.alex.deliveryapp.activities.client.payments.mercado_pago.status.ClientPaymentStatusActivity
 import com.alex.deliveryapp.adapters.ShoppingCarAdapter
 import com.alex.deliveryapp.models.*
 import com.alex.deliveryapp.providers.MercadoPagoProvider

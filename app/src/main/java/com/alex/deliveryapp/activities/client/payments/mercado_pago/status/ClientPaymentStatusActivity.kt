@@ -1,4 +1,4 @@
-package com.alex.deliveryapp.activities.client.payments.status
+package com.alex.deliveryapp.activities.client.payments.mercado_pago.status
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

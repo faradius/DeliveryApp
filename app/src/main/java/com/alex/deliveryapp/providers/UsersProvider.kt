@@ -13,6 +13,7 @@ import com.alex.deliveryapp.utils.SharedPref
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -94,9 +95,9 @@ class UsersProvider(val token:String? = null) {
     }
 
     fun update(file: File, user: User): Call<ResponseHttp>?{
-        val reqFile = RequestBody.create(MediaType.parse("image/*"), file) //Este es el archivo que vamos a enviar
+        val reqFile = RequestBody.create("image/*".toMediaTypeOrNull(), file) //Este es el archivo que vamos a enviar
         val image = MultipartBody.Part.createFormData("image", file.name, reqFile) // Este es el nombre del archivo
-        val requestBody = RequestBody.create(MediaType.parse("text/plain"), user.toJson())
+        val requestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), user.toJson())
 
         return userRoutesToken?.update(image, requestBody,token!!)
     }

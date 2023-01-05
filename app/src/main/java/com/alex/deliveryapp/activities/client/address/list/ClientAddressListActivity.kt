@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.address.create.ClientAddressCreateActivity
-import com.alex.deliveryapp.activities.client.payments.form.ClientPaymentFormActivity
+import com.alex.deliveryapp.activities.client.payments.mercado_pago.form.ClientPaymentFormActivity
+import com.alex.deliveryapp.activities.client.payments.payment_method.ClientPaymentMethodActivity
 import com.alex.deliveryapp.adapters.AddressAdapter
 import com.alex.deliveryapp.adapters.ShoppingCarAdapter
 import com.alex.deliveryapp.models.*
@@ -151,7 +152,7 @@ class ClientAddressListActivity : AppCompatActivity() {
     }
 
     private fun goToPaymentsForm(){
-        val i = Intent(this, ClientPaymentFormActivity::class.java)
+        val i = Intent(this, ClientPaymentMethodActivity::class.java)
         startActivity(i)
     }
 

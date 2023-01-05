@@ -8,6 +8,7 @@ import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.routes.CategoriesRoutes
 import com.alex.deliveryapp.routes.ProductsRoutes
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -31,12 +32,12 @@ class ProductsProvider(val token: String) {
         val images = arrayOfNulls<MultipartBody.Part>(files.size)
 
         for (i in 0 until files.size){
-            val reqFile = RequestBody.create(MediaType.parse("image/*"), files[i]) //Este es el archivo que vamos a enviar
+            val reqFile = RequestBody.create("image/*".toMediaTypeOrNull(), files[i]) //Este es el archivo que vamos a enviar
             images[i] = MultipartBody.Part.createFormData("image", files[i].name, reqFile) // Este es el nombre del archivo
         }
 
 
-        val requestBody = RequestBody.create(MediaType.parse("text/plain"), product.toJson())
+        val requestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), product.toJson())
 
         return productsRoutes?.create(images, requestBody,token)
     }

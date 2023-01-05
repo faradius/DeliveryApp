@@ -12,7 +12,7 @@ import com.alex.deliveryapp.R
 import com.alex.deliveryapp.activities.client.address.list.ClientAddressListActivity
 import com.alex.deliveryapp.activities.client.home.ClientHomeActivity
 import com.alex.deliveryapp.activities.client.orders.detail.ClientOrdersDetailActivity
-import com.alex.deliveryapp.activities.client.payments.form.ClientPaymentFormActivity
+import com.alex.deliveryapp.activities.client.payments.mercado_pago.form.ClientPaymentFormActivity
 import com.alex.deliveryapp.activities.client.products.list.ClientProductsListActivity
 import com.alex.deliveryapp.activities.delivery.home.DeliveryHomeActivity
 import com.alex.deliveryapp.activities.restaurant.home.RestaurantHomeActivity

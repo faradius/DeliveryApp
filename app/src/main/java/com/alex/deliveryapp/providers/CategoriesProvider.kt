@@ -6,6 +6,7 @@ import com.alex.deliveryapp.models.ResponseHttp
 import com.alex.deliveryapp.models.User
 import com.alex.deliveryapp.routes.CategoriesRoutes
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -25,9 +26,9 @@ class CategoriesProvider(val token: String) {
     }
 
     fun create(file: File, category: Category): Call<ResponseHttp>?{
-        val reqFile = RequestBody.create(MediaType.parse("image/*"), file) //Este es el archivo que vamos a enviar
+        val reqFile = RequestBody.create("image/*".toMediaTypeOrNull(), file) //Este es el archivo que vamos a enviar
         val image = MultipartBody.Part.createFormData("image", file.name, reqFile) // Este es el nombre del archivo
-        val requestBody = RequestBody.create(MediaType.parse("text/plain"), category.toJson())
+        val requestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), category.toJson())
 
         return categoriesRoutes?.create(image, requestBody,token)
     }
