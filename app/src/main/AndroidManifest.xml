@@ -26,6 +26,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activities.client.payments.paypal.status.ClientPaymentsPaypalStatusActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.client.payments.paypal.form.ClientPaymentPaypalFormActivity"
             android:exported="false"
             android:parentActivityName=".activities.client.payments.payment_method.ClientPaymentMethodActivity">
